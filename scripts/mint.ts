@@ -1,13 +1,11 @@
 import {deployments, getNamedAccounts} from 'hardhat';
-import {randomMintSignature} from '../utils/mandala';
 
 async function main() {
-	const {execute, read} = deployments;
-	const currentPrice = await read('MandalaToken', 'currentPrice');
+	const args = process.argv.slice(2);
+	const address = args[0];
+	const {execute} = deployments;
 	const {deployer} = await getNamedAccounts();
-	const {signature, tokenId} = await randomMintSignature(deployer);
-	console.log({tokenId});
-	await execute('MandalaToken', {from: deployer, log: true, value: currentPrice}, 'mint', deployer, signature);
+	await execute('Blockies', {from: deployer, log: true}, 'registerIfNotAlready', address);
 }
 
 main()
