@@ -15,7 +15,7 @@ specifiers:
   chai-ethers: ^0.0.1
   cross-env: ^7.0.2
   dotenv: ^16.0.0
-  ethereum-contracts-test-suite: ^0.1.0
+  ethereum-contracts-test-suite: ^0.1.1
   ethers: ^5.6.4
   fs-extra: ^10.1.0
   hardhat: ^2.11.0
@@ -49,7 +49,7 @@ devDependencies:
   chai-ethers: 0.0.1
   cross-env: 7.0.3
   dotenv: 16.0.2
-  ethereum-contracts-test-suite: 0.1.0
+  ethereum-contracts-test-suite: 0.1.1
   ethers: 5.7.0
   fs-extra: 10.1.0
   hardhat: 2.11.0_s5ojjbx2isjkawqptqpitvy25q
@@ -2527,8 +2527,8 @@ packages:
       js-sha3: 0.8.0
     dev: true
 
-  /ethereum-contracts-test-suite/0.1.0:
-    resolution: {integrity: sha512-oggoifytuDMEGWmaTFmKLrUMDyGqv6ieNzUbmz6Oha5+vmhT4/qGMwJXbJlFlPOKF+4HGjO48zqehZ3QjHLYsQ==}
+  /ethereum-contracts-test-suite/0.1.1:
+    resolution: {integrity: sha512-hihS8dbaeAStV/AdM36IOsGIn9GRzh7nI1YaWGHj198tbDfEv6IK7k2zG+TNeEwMw/oNrhMWAkn+XD2zLCyBog==}
     dev: true
 
   /ethereum-cryptography/0.1.3:

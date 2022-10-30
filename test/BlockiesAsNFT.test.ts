@@ -5,7 +5,7 @@ import {network, ethers} from 'hardhat';
 import {Wallet} from 'ethers';
 import {parseEther} from 'ethers/lib/utils';
 
-erc721.runMochaTests('Blockies as NFT', {burn: false}, async () => {
+erc721.runMochaTests('Blockies as NFT', {burn: false, ownedByAll: true}, async () => {
 	const {deployer} = await getNamedAccounts();
 	const users = await getUnnamedAccounts();
 	const state = await setup();

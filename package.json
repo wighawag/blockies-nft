@@ -32,7 +32,7 @@
     "chai-ethers": "^0.0.1",
     "cross-env": "^7.0.2",
     "dotenv": "^16.0.0",
-    "ethereum-contracts-test-suite": "^0.1.0",
+    "ethereum-contracts-test-suite": "^0.1.1",
     "ethers": "^5.6.4",
     "fs-extra": "^10.1.0",
     "hardhat": "^2.11.0",
