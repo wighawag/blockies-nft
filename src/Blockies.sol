@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.8.16;
 
-import "solidity-kit/solc_0.8/ERC721/implementations/ERC721.sol";
+import "solidity-kit/solc_0.8/ERC721/implementations/ERC721OwnedByAll.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 
 // import "solidity-kit/solc_0.8/Multicall/UsingMulticall.sol";
@@ -9,7 +9,7 @@ import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitW
 // import "solidity-kit/solc_0.8/ERC2981/implementations/UsingGlobalRoyalties.sol";
 // import "solidity-kit/solc_0.8/Guardian/implementations/UsingGuardian.sol";
 
-contract Blockies is ERC721, UsingERC4494PermitWithDynamicChainId {
+contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	struct Seed {
 		int32 s0;
 		int32 s1;
@@ -43,12 +43,12 @@ contract Blockies is ERC721, UsingERC4494PermitWithDynamicChainId {
 		return _tokenURI(id);
 	}
 
-	function supportsInterface(bytes4 id) public view override(ERC721, UsingERC4494Permit) returns (bool) {
-		return ERC721.supportsInterface(id) || UsingERC4494Permit.supportsInterface(id);
+	function supportsInterface(bytes4 id) public view override(BasicERC721, UsingERC4494Permit) returns (bool) {
+		return BasicERC721.supportsInterface(id) || UsingERC4494Permit.supportsInterface(id);
 	}
 
 	function registerIfNotAlready(address id) external {
-		_safeTransferFrom(address(0), id, uint256(uint160(id)), "");
+		_safeTransferFrom(id, id, uint256(uint160(id)), "");
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------
