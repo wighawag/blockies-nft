@@ -1,0 +1,311 @@
+<html>
+	<head>
+		<title>Inspect NFT</title>
+		<style>
+			* {
+        background-color: #111111;
+        color: wheat;
+				margin: 0;
+				padding: 0;
+			}
+			p,
+			h1 {
+				margin: 1em 1em 1em 1em;
+			}
+			:root {
+				--width: 80vw;
+			}
+			#wrapper {
+				text-align: center;
+				height: 100%;
+				margin: 0;
+			}
+			#nft-image {
+				width: 30%;
+				height: auto;
+			}
+
+			@media only screen and (max-width: 1000px) {
+				#nft-image {
+					width: 60%;
+					height: auto;
+				}
+			}
+
+			@media only screen and (max-width: 600px) {
+				#nft-image {
+					width: 90%;
+					height: auto;
+				}
+			}
+
+			@media only screen and (max-width: 400px) {
+				#nft-image {
+					width: 100%;
+					height: auto;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrapper">
+			<h1 id="nft-title">Loading...</h1>
+			<p id="nft-description"></p>
+			<p>
+				<img id="nft-image" />
+			</p>
+      <p>
+        <div id="nft-iframe-wrapper">
+				<iframe id="nft-iframe"></iframe>
+        </div>
+			</p>
+			<p><audio id="nft-sound" controls autoplay></audio></p>
+		</div>
+		<script>
+			function hex_to_ascii(str1) {
+				var hex = str1.toString();
+				var str = '';
+				for (var n = 0; n < hex.length; n += 2) {
+					str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+				}
+				return str;
+			}
+
+      const title = document.getElementById('nft-title');
+			const description = document.getElementById('nft-description');
+			const img = document.getElementById('nft-image');
+			const sound = document.getElementById('nft-sound');
+      const iframeWrapper = document.getElementById('nft-iframe-wrapper');
+			const iframe = document.getElementById('nft-iframe');
+
+      async function fetchLatestBlock() {
+        const result = await fetch('http://localhost:8545', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_blockNumber',
+            params: []
+          })
+        }).then(v => v.json());
+        return parseInt(result.result.slice(2), 16);
+      }
+
+      async function fetchTokenFromLastTransferEvent(batchSize, back, latestBlock) {
+        if (!latestBlock) {
+          latestBlock = await fetchLatestBlock();
+        }
+        if (!batchSize) {
+          batchSize = 100;
+        }
+        batchSize = Math.min(batchSize, latestBlock);
+        if (!back) {
+          back = 0;
+        }
+        const fromBlockNumber = (latestBlock - batchSize - back);
+        const toBlockNumber = (latestBlock - back);
+        // console.log({fromBlockNumber, toBlockNumber});
+        const fromBlock = '0x' + fromBlockNumber.toString(16);
+        const toBlock = '0x' + toBlockNumber.toString(16);
+
+
+        try {
+          const result = await fetch('http://localhost:8545', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 1,
+              method: 'eth_getLogs',
+              params: [
+                {
+                  fromBlock,
+                  toBlock,
+                  topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef']
+                }
+              ]
+            })
+          }).then(v => v.json());
+          if (result.result.length) {
+            return {contractAddress: result.result[result.result.length - 1].address, tokenIDAsHex: result.result[result.result.length - 1].topics[3].slice(26)};
+          }
+          if (fromBlockNumber == 0) {
+            latestBlock = undefined;
+            return undefined;
+          } else {
+            console.log(`fetching more logs...`)
+            return fetchTokenFromLastTransferEvent(100, batchSize, latestBlock);
+          }
+
+        } catch(err) {
+          console.error(err)
+        }
+      }
+
+
+
+      function fetchToken(contractAddress, tokenIDAsHex) {
+        const data = '0xc87b56dd' + tokenIDAsHex.padStart(64, '0');
+
+        return fetch('http://localhost:8545', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_call',
+            params: [
+              {
+                data,
+                to: contractAddress
+              },
+              'latest'
+            ]
+          })
+        });
+      }
+
+      let firsTime = true;
+      async function fetchIt(contractAddress, tokenIDAsHex) {
+
+        if (contractAddress && tokenIDAsHex) {
+          return fetchToken(contractAddress, tokenIDAsHex);
+        } else {
+          if (firsTime) {
+            firsTime = false;
+            console.log(`no contract or token specified, fetching latest transfer event...`);
+          }
+
+          const data = await fetchTokenFromLastTransferEvent();
+          if (!data) {
+            title.innerHTML = "No Token Found";
+            return undefined;
+          }
+          return fetchToken(data.contractAddress, data.tokenIDAsHex).
+          then((response) => response.json())
+          .then((json) => {
+            if (json.error) {
+              console.error(json.error);
+              throw json.error;
+            }
+            return json;
+          })
+          .then((json) => json.result)
+        }
+      }
+
+      let last_tokenURI;
+      let last_tokenID;
+      let last_contractAddress;
+			async function refresh() {
+				const hashStr = location.hash && location.hash.slice(1);
+
+        let tokenIDAsHex;
+        let contractAddress;
+        if (hashStr) {
+          const splitted = hashStr.split('_');
+          contractAddress = splitted[0];
+          const tokenID = splitted[1];
+          if (last_contractAddress !== contractAddress || last_tokenID != tokenID) {
+            last_contractAddress = contractAddress;
+            last_tokenIDx = tokenID;
+            console.log({tokenID, contractAddress});
+          }
+
+          tokenIDAsHex = tokenID.startsWith('0x') ? tokenID.slice(2) : parseInt(tokenID).toString(16);
+        }
+
+        // console.log({tokenIDAsHex, contractAddress});
+
+        const tokenURIData = await fetchIt(contractAddress, tokenIDAsHex);
+        if (!tokenURIData) {
+          console.log(`no token found, please mint one.`);
+          return;
+        }
+        const hex = tokenURIData.slice(2);
+        const hex2 = hex.slice(64);
+        const len = hex2.slice(0, 64);
+        const size = parseInt(len, 16);
+        const hexData = hex2.slice(64, 64 + size * 2);
+        const tokenURI = hex_to_ascii(hexData);
+
+        let showJSON = false;
+        if (last_tokenURI != tokenURI) {
+          last_tokenURI = tokenURI;
+          showJSON = true;
+          console.log(tokenURI);
+        }
+
+
+        let tokenURIResponse;
+        return fetch(tokenURI)
+          .then(async (response) => {
+            tokenURIResponse = response.clone();
+            // console.log({
+            //   metadata: await response.clone().text()
+            // });
+            return response.json();
+          })
+          .then((json) => {
+            if (showJSON) {
+              console.log(json);
+            }
+
+            if (json.name) {
+              title.innerHTML = json.name;
+            }
+            if (json.description) {
+              description.innerHTML = json.description;
+            }
+            if (json.image) {
+              if (json.image !== img.src) {
+                img.src = json.image;
+              }
+            }
+            if (json.animation_url) {
+              if (json.animation_url.startsWith('data:audio/')) {
+                if (json.animation_url !== sound.src) {
+                  sound.style.display = 'inline-block';
+                  sound.src = json.animation_url;
+                }
+              } else if (json.animation_url.startsWith('data:text/html')) {
+                if (json.animation_url !== iframe.src) {
+                  iframeWrapper.style.display = 'inline-block';
+                  iframe.src = json.animation_url;
+                }
+              } else {
+                // TODO ?
+              }
+            }
+          })
+          .catch(async (e) => {
+            console.error('ERROR', e);
+            try {
+              console.log({
+                tokenURIRAW: await tokenURIResponse.text()
+              });
+            } catch(err2) {
+
+            }
+          });
+			}
+
+      sound.style.display = 'none';
+      iframeWrapper.style.display = 'none';
+
+      let timeout;
+			function refreshAgainAndAgain() {
+				refresh();
+				timeout = setTimeout(refreshAgainAndAgain, 1000);
+			}
+			refreshAgainAndAgain();
+		</script>
+	</body>
+</html>
