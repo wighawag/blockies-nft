@@ -36,7 +36,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	}
 
 	function symbol() external pure returns (string memory) {
-		return "BLK";
+		return "BLCK";
 	}
 
 	function tokenURI(uint256 id) external pure override returns (string memory str) {
@@ -47,8 +47,15 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 		return BasicERC721.supportsInterface(id) || UsingERC4494Permit.supportsInterface(id);
 	}
 
-	function registerIfNotAlready(address id) external {
-		_safeTransferFrom(id, id, uint256(uint160(id)), "");
+	function registerIfNotAlready(uint256 id) external {
+		require(id < 2**160, "NONEXISTENT_TOKEN");
+		(, uint256 blockNumber) = _ownerAndBlockNumberOf(id);
+
+		// require(blockNumber == 0, "ALREADY_REGISTERED");
+		if (blockNumber == 0) {
+			_owners[id] = (block.number << 160) | id;
+			emit Transfer(address(uint160(id)), address(uint160(id)), id);
+		}
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------
