@@ -4,11 +4,6 @@ pragma solidity 0.8.16;
 import "solidity-kit/solc_0.8/ERC721/implementations/ERC721OwnedByAll.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 
-// import "solidity-kit/solc_0.8/Multicall/UsingMulticall.sol";
-// import "solidity-kit/solc_0.8/ERC721/implementations/UsingExternalMinter.sol";
-// import "solidity-kit/solc_0.8/ERC2981/implementations/UsingGlobalRoyalties.sol";
-// import "solidity-kit/solc_0.8/Guardian/implementations/UsingGuardian.sol";
-
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	struct Seed {
 		int32 s0;
@@ -35,30 +30,55 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	// address(0) works for non-upgradeable contract, where implementation is the contract, see solidity-kit
 	constructor() UsingERC712WithDynamicChainId(address(0)) {}
 
+	/// @notice A descriptive name for a collection of NFTs in this contract
 	function name() public pure override returns (string memory) {
 		return "Blockies";
 	}
 
+	/// @notice An abbreviated name for NFTs in this contract
 	function symbol() external pure returns (string memory) {
 		return "BLCK";
 	}
 
+	/// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
+	/// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
+	///  3986. The URI may point to a JSON file that conforms to the "ERC721
+	///  Metadata JSON Schema".
 	function tokenURI(uint256 id) external pure override returns (string memory str) {
 		return _tokenURI(id);
 	}
 
+	/// @notice Query if a contract implements an interface
+	/// @param id The interface identifier, as specified in ERC-165
+	/// @dev Interface identification is specified in ERC-165. This function
+	///  uses less than 30,000 gas.
+	/// @return `true` if the contract implements `interfaceID` and
+	///  `interfaceID` is not 0xffffffff, `false` otherwise
 	function supportsInterface(bytes4 id) public view override(BasicERC721, UsingERC4494Permit) returns (bool) {
 		return BasicERC721.supportsInterface(id) || UsingERC4494Permit.supportsInterface(id);
 	}
 
-	function registerIfNotAlready(uint256 id) external {
+	/// @notice emit Transfer event so that indexer can pick it up.
+	///   This can be called by anyone but only if the token was never transfered beforehand.
+	///   It keeps the token's operator-approval state and will reemit an Approval event to indicate that.
+	/// @param id tokenID to emit the event for.
+	function emitFirstTransferEvent(uint256 id) external {
 		require(id < 2**160, "NONEXISTENT_TOKEN");
-		(, uint256 blockNumber) = _ownerAndBlockNumberOf(id);
+		(, uint256 blockNumber, bool operatorEnabled) = _ownerBlockNumberAndOperatorEnabledOf(id);
+		require(blockNumber == 0, "ALREADY_EMITTED");
 
-		// require(blockNumber == 0, "ALREADY_REGISTERED");
-		if (blockNumber == 0) {
-			_owners[id] = (block.number << 160) | id;
-			emit Transfer(address(uint160(id)), address(uint160(id)), id);
+		// set the blockNumber and owner but keep the existing operator (see emit Approval below)
+		address owner = address(uint160(id));
+		_owners[id] = (operatorEnabled ? OPERATOR_FLAG : 0) | ((block.number << 160) | id);
+		_balances[owner]++;
+
+		// We emit 2 events as Transfer is used to indicate change of ownership as per ERC721 spec
+		emit Transfer(owner, address(this), id);
+		emit Transfer(address(this), owner, id);
+
+		if (operatorEnabled) {
+			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec
+			emit Approval(owner, _operators[id], id);
 		}
 	}
 

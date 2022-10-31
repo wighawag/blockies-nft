@@ -4,7 +4,7 @@ async function main() {
 	const {execute} = deployments;
 	const {deployer} = await getNamedAccounts();
 	console.log({deployer});
-	await execute('Blockies', {from: deployer, log: true}, 'registerIfNotAlready', deployer);
+	await execute('Blockies', {from: deployer, log: true}, 'emitFirstTransferEvent', deployer);
 }
 
 main()
