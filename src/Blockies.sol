@@ -59,22 +59,13 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	}
 
 	/// @notice emit Transfer event so that indexer can pick it up.
-	///   This can be called by anyone but only if the token was never transfered beforehand.
-	///   It keeps the token's operator-approval state and will reemit an Approval event to indicate that.
+	///   This can be called by anyone at any time and does not change state
+	///   As such itt keeps the token's operator-approval state and will reemit an Approval event to indicate that.
 	/// @param id tokenID to emit the event for.
-	function emitFirstTransferEvent(uint256 id) external {
+	function emitSelfTransferEvent(uint256 id) external {
 		require(id < 2**160, "NONEXISTENT_TOKEN");
-		(, uint256 blockNumber, bool operatorEnabled) = _ownerBlockNumberAndOperatorEnabledOf(id);
-		require(blockNumber == 0, "ALREADY_EMITTED");
-
-		// set the blockNumber and owner but keep the existing operator (see emit Approval below)
-		address owner = address(uint160(id));
-		_owners[id] = (operatorEnabled ? OPERATOR_FLAG : 0) | ((block.number << 160) | id);
-		_balances[owner]++;
-
-		// We emit 2 events as Transfer is used to indicate change of ownership as per ERC721 spec
-		emit Transfer(owner, address(this), id);
-		emit Transfer(address(this), owner, id);
+		(address owner, uint256 blockNumber, bool operatorEnabled) = _ownerBlockNumberAndOperatorEnabledOf(id);
+		emit Transfer(owner, owner, id);
 
 		if (operatorEnabled) {
 			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec

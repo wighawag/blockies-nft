@@ -6,7 +6,7 @@ describe('Blockies', function () {
 	it('has correct balance after emitting first transfer event', async function () {
 		const state = await setup();
 		const {users, Blockies} = state;
-		await waitFor(users[0].Blockies.emitFirstTransferEvent(users[0].address));
+		await waitFor(users[0].Blockies.emitSelfTransferEvent(users[0].address));
 		expect(await Blockies.balanceOf(users[0].address)).to.be.equal(1);
 	});
 

@@ -76,9 +76,9 @@ describe('Blockies: balance', function () {
 		assert.equal(balance.toNumber(), 1);
 
 		const tokenId1 = users[1].address;
-		await waitFor(users[0].Blockies.emitFirstTransferEvent(tokenId1));
+		await waitFor(users[0].Blockies.emitSelfTransferEvent(tokenId1));
 		const tokenId2 = users[2].address;
-		await waitFor(users[0].Blockies.emitFirstTransferEvent(tokenId2));
+		await waitFor(users[0].Blockies.emitSelfTransferEvent(tokenId2));
 
 		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[0].address, tokenId1));
 		let newBalance = await Blockies.callStatic.balanceOf(users[0].address);

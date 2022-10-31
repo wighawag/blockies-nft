@@ -5,7 +5,7 @@ async function main() {
 	const address = args[0];
 	const {execute} = deployments;
 	const {deployer} = await getNamedAccounts();
-	await execute('Blockies', {from: deployer, log: true}, 'emitFirstTransferEvent', address);
+	await execute('Blockies', {from: deployer, log: true}, 'emitSelfTransferEvent', address);
 }
 
 main()
