@@ -1,6 +1,6 @@
 import {expect} from './chai-setup';
 import {setup} from './setup';
-import {BigNumber, utils} from 'ethers';
+import {BigNumber, constants, utils} from 'ethers';
 import {assert} from 'chai';
 import {waitFor} from './utils';
 const {getAddress} = utils;
@@ -90,5 +90,41 @@ describe('Blockies: balance', function () {
 		await waitFor(users[0].Blockies.transferFrom(users[0].address, users[2].address, tokenId1));
 		newBalance = await Blockies.callStatic.balanceOf(users[0].address);
 		assert.equal(newBalance.toNumber(), 2);
+	});
+});
+
+describe('Approval via Permit', function () {
+	it('works', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		const signature = await users[0].BlockiesPermit.sign({
+			spender: users[1].address,
+			tokenId: users[0].address,
+			nonce: 0,
+			deadline: constants.MaxUint256
+		});
+
+		const permitTX = await users[1].Blockies.permit(
+			users[1].address,
+			users[0].address,
+			constants.MaxUint256,
+			signature
+		);
+		await permitTX.wait();
+
+		const transferTX = await users[1].Blockies.transferFrom(users[0].address, users[1].address, users[0].address);
+		await transferTX.wait();
+
+		expect(await Blockies.ownerOf(users[0].address)).to.be.equal(users[1].address);
+	});
+
+	it('supportsInterface', async function () {
+		const state = await setup();
+		const {Blockies} = state;
+		const result1 = await Blockies.callStatic.supportsInterface('0x5604e225');
+		assert.equal(result1, true);
+		const result2 = await Blockies.callStatic.supportsInterface('0xefdb586b');
+		assert.equal(result2, true);
 	});
 });

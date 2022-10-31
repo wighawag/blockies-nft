@@ -32,6 +32,9 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	uint256 internal constant ADDRESS_NAME_POS = 72;
 	uint256 internal constant ADDRESS_NAME_2_POS = 151;
 
+	// address(0) works for non-upgradeable contract, where implementation is the contract, see solidity-kit
+	constructor() UsingERC712WithDynamicChainId(address(0)) {}
+
 	function name() public pure override returns (string memory) {
 		return "Blockies";
 	}

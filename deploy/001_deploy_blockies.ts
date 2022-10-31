@@ -1,6 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {DeployFunction} from 'hardhat-deploy/types';
-import {network} from 'hardhat';
+// import {network} from 'hardhat';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const {deployments, getNamedAccounts} = hre;
@@ -11,7 +11,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await deploy('Blockies', {
 		from: deployer,
 		log: true,
-		proxy: network.name !== 'mainnet',
+		// proxy: network.name !== 'mainnet',
 		autoMine: true,
 		skipIfAlreadyDeployed: hre.network.live
 	});
