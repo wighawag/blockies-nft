@@ -11,15 +11,31 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	bytes internal constant TEMPLATE =
 		"data:application/json,{\"name\":\"0x0000000000000000000000000000000000000000\",\"description\":\"Blocky%200x0000000000000000000000000000000000000000%20generated%20on-chain\",\"image\":\"data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20shape-rendering='crispEdges'%20width='512'%20height='512'><g%20transform='scale(64)'><path%20fill='hsl(000,000%,000%)'%20d='M0,0h8v8h-8z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/></g></svg>\"}";
 
-	uint256 internal constant COLOR_BG_POS = 280 + 40 + 23;
-	uint256 internal constant COLOR_1_POS = 334 + 40 + 23;
-	uint256 internal constant COLOR_2_POS = 1179 + 40 + 23;
+	// 33 start position for address in name
+	// 41 = length of address - 1
+	// 3 =  number of "\"
+	uint256 internal constant ADDRESS_NAME_POS = 34 - 3 + 41; // 72
 
-	uint256 internal constant PATH_1_POS = 352 + 40 + 23;
-	uint256 internal constant PATH_2_POS = 1197 + 40 + 23;
+	// 22 = distance
+	// 9 = Blocky%20
+	// 41 = length of address - 1
+	// 4 = further number of "\"
+	uint256 internal constant ADDRESS_NAME_2_POS = ADDRESS_NAME_POS + 22 - 4 + 9 + 41; // 140
 
-	uint256 internal constant ADDRESS_NAME_POS = 72;
-	uint256 internal constant ADDRESS_NAME_2_POS = 140;
+	// 184 = distance
+	// 4 = further number of "\"
+	// 23 = %20generated%20on-chain
+	uint256 internal constant COLOR_BG_POS = ADDRESS_NAME_2_POS + 23 + 184 - 4; // 343
+
+	// 54 = distance
+	uint256 internal constant COLOR_1_POS = COLOR_BG_POS + 54; // 397
+	// 18 = distance
+	uint256 internal constant PATH_1_POS = COLOR_1_POS + 18; // 415
+
+	// 827 = distance
+	uint256 internal constant COLOR_2_POS = PATH_1_POS + 827; // 1242
+	// 18 = distance
+	uint256 internal constant PATH_2_POS = COLOR_2_POS + 18; // 1260
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// DATA AND TYPES
@@ -37,7 +53,6 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	// CONSTRUCTOR
 	// ------------------------------------------------------------------------------------------------------------------
 
-	// address(0) works for non-upgradeable contract, where implementation is the contract, see solidity-kit
 	constructor() UsingERC712WithDynamicChainId(address(0)) {}
 
 	// ------------------------------------------------------------------------------------------------------------------
@@ -51,7 +66,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 
 	/// @notice An abbreviated name for NFTs in this contract
 	function symbol() external pure returns (string memory) {
-		return "BLCK";
+		return "BLOCKY";
 	}
 
 	/// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
@@ -74,11 +89,11 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 
 	/// @notice emit Transfer event so that indexer can pick it up.
 	///   This can be called by anyone at any time and does not change state
-	///   As such itt keeps the token's operator-approval state and will reemit an Approval event to indicate that.
+	///   As such it keeps the token's operator-approval state and will re-emit an Approval event to indicate that.
 	/// @param id tokenID to emit the event for.
 	function emitSelfTransferEvent(uint256 id) external {
 		require(id < 2**160, "NONEXISTENT_TOKEN");
-		(address owner, uint256 blockNumber, bool operatorEnabled) = _ownerBlockNumberAndOperatorEnabledOf(id);
+		(address owner, , bool operatorEnabled) = _ownerBlockNumberAndOperatorEnabledOf(id);
 		emit Transfer(owner, owner, id);
 
 		if (operatorEnabled) {
