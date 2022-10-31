@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.8.16;
 
+import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
 import "solidity-kit/solc_0.8/ERC721/implementations/ERC721OwnedByAll.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 
-contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
+contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata {
 	// ------------------------------------------------------------------------------------------------------------------
 	// TEMPLATE
 	// ------------------------------------------------------------------------------------------------------------------
@@ -59,31 +60,28 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId {
 	// EXTERNAL INTERFACE
 	// ------------------------------------------------------------------------------------------------------------------
 
-	/// @notice A descriptive name for a collection of NFTs in this contract
-	function name() public pure override returns (string memory) {
+	/// @inheritdoc IERC721Metadata
+	function name() public pure override(IERC721Metadata, Named) returns (string memory) {
 		return "Blockies";
 	}
 
-	/// @notice An abbreviated name for NFTs in this contract
+	/// @inheritdoc IERC721Metadata
 	function symbol() external pure returns (string memory) {
 		return "BLOCKY";
 	}
 
-	/// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
-	/// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
-	///  3986. The URI may point to a JSON file that conforms to the "ERC721
-	///  Metadata JSON Schema".
+	/// @inheritdoc IERC721Metadata
 	function tokenURI(uint256 id) external pure override returns (string memory str) {
 		return _tokenURI(id);
 	}
 
-	/// @notice Query if a contract implements an interface
-	/// @param id The interface identifier, as specified in ERC-165
-	/// @dev Interface identification is specified in ERC-165. This function
-	///  uses less than 30,000 gas.
-	/// @return `true` if the contract implements `interfaceID` and
-	///  `interfaceID` is not 0xffffffff, `false` otherwise
-	function supportsInterface(bytes4 id) public view override(BasicERC721, UsingERC4494Permit) returns (bool) {
+	/// @inheritdoc IERC165
+	function supportsInterface(bytes4 id)
+		public
+		view
+		override(BasicERC721, UsingERC4494Permit, IERC165)
+		returns (bool)
+	{
 		return BasicERC721.supportsInterface(id) || UsingERC4494Permit.supportsInterface(id);
 	}
 
