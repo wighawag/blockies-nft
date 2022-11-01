@@ -7,7 +7,7 @@ import "solidity-kit/solc_0.8/ERC173/interfaces/IERC173.sol";
 import "solidity-kit/solc_0.8/ERC721/TokenURI/interfaces/IContractURI.sol";
 import "./ERC721OwnedByAll.sol";
 
-/// @notice Blockies as NFT. Each ethereum address owns its own one. No minting needed.
+/// @notice Blockies as NFT. Each ethereum address owns its own Blocky NFT. No minting needed.
 /// You can even use Permit (EIP-4494) to approve contracts via signatures.
 /// Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
 /// @title On-chain Blockies
@@ -18,7 +18,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	// TEMPLATE
 	// ------------------------------------------------------------------------------------------------------------------
 	bytes internal constant TOKEN_URI_TEMPLATE =
-		'data:application/json,{"name":"0x0000000000000000000000000000000000000000","description":"Blocky%200x0000000000000000000000000000000000000000%20generated%20on-chain","image":"';
+		'data:application/json,{"name":"0x0000000000000000000000000000000000000000","description":"Blocky%200x0000000000000000000000000000000000000000%20Generated%20On-Chain","image":"';
 
 	// 31 start position for address in name
 	// 41 = length of address - 1
@@ -74,7 +74,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 
 	/// @inheritdoc IERC721Metadata
 	function name() public pure override(IERC721Metadata, Named) returns (string memory) {
-		return "On-chain Blockies";
+		return "Blockies";
 	}
 
 	/// @inheritdoc IERC721Metadata
@@ -96,7 +96,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		return
 			string(
 				bytes.concat(
-					'data:application/json,{"name":"Blockies","description":"On-chain%20Blockies","image":"',
+					'data:application/json,{"name":"On-chain%20Blockies","description":"The%20original%20Blockies,%20but%20fully%20generated%20on-chain.%20Each%20Ethereum%20address%20owns%20its%20own%20unique%20Blocky%20NFT.","image":"',
 					_renderSVG(uint160(address(this))),
 					'"}'
 				)
