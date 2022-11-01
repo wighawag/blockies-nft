@@ -11,3 +11,4 @@ _lib/
 *.json
 .yalc
 tmp/
+*.hbs

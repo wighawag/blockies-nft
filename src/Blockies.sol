@@ -5,6 +5,10 @@ import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 import "./ERC721OwnedByAll.sol";
 
+/// @notice Blockies as NFT. Each ethereum address owns its own one. No minting needed.
+/// You can even use Permit (EIP-4494) to approve contracts via signatures.
+/// Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
+/// @title Blockies on-chain
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata {
 	// ------------------------------------------------------------------------------------------------------------------
 	// TEMPLATE

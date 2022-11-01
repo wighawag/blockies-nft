@@ -1,0 +1,58 @@
+{{#each deployed}}
+{{#if userdoc}}
+
+{{#if devdoc.title}}
+## {{devdoc.title}}
+{{else}}
+## {{name}}
+{{/if}}
+{{{userdoc.notice}}}
+
+{{#each methods}}
+
+----
+
+### **{{signature}}**
+
+{{natspec.notice}}
+
+{{#if natspec.params.length}}
+Params:
+{{#each natspec.params}}
+{{#if name}}
+ - `{{name}}`: {{{description}}}
+{{else}}
+ 1. {{{description}}}
+{{/if}}
+{{/each}}
+{{/if}}
+
+{{#if natspec.returns.length}}
+Returns:
+{{#each natspec.returns}}
+{{#if name}}
+ - `{{name}}`: {{{description}}}
+{{else}}
+ 1. {{{description}}}
+{{/if}}
+{{/each}}
+{{/if}}
+
+{{/each}}
+
+{{#each events}}
+## `event` {{signature}}
+
+{{{natspec.userdoc}}}
+{{{natspec.devdoc}}}
+
+**Params**
+{{#each natspec.params}}
+ - `{{param}}`: {{{description}}}
+{{/each}}
+
+{{/each}}
+
+{{/if}}
+{{/each}}
+
