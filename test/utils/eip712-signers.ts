@@ -20,3 +20,24 @@ export const ERC4494SignerFactory = new EIP712SignerFactory({
 		}
 	]
 });
+
+export const ERC4494StylePermitForAllSignerFactory = new EIP712SignerFactory({
+	PermitForAll: [
+		{
+			name: 'owner',
+			type: 'address'
+		},
+		{
+			name: 'spender',
+			type: 'address'
+		},
+		{
+			name: 'nonce',
+			type: 'uint256'
+		},
+		{
+			name: 'deadline',
+			type: 'uint256'
+		}
+	]
+});

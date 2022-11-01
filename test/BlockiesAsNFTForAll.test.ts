@@ -94,7 +94,7 @@ describe('Blockies: balance', function () {
 });
 
 describe('Approval via Permit', function () {
-	it('works', async function () {
+	it('single permit works', async function () {
 		const state = await setup();
 		const {users, Blockies} = state;
 
@@ -108,6 +108,39 @@ describe('Approval via Permit', function () {
 		const permitTX = await users[1].Blockies.permit(
 			users[1].address,
 			users[0].address,
+			constants.MaxUint256,
+			signature
+		);
+		await permitTX.wait();
+
+		const transferTX = await users[1].Blockies.transferFrom(users[0].address, users[1].address, users[0].address);
+		await transferTX.wait();
+
+		expect(await Blockies.ownerOf(users[0].address)).to.be.equal(users[1].address);
+	});
+
+	it('no permit no approval', async function () {
+		const state = await setup();
+		const {users} = state;
+
+		await expect(users[1].Blockies.transferFrom(users[0].address, users[1].address, users[0].address)).to.be
+			.reverted;
+	});
+
+	it('permit for all works', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		const signature = await users[0].BlockiesPermitForAll.sign({
+			owner: users[0].address,
+			spender: users[1].address,
+			nonce: 0,
+			deadline: constants.MaxUint256
+		});
+
+		const permitTX = await users[1].Blockies.permitForAll(
+			users[0].address,
+			users[1].address,
 			constants.MaxUint256,
 			signature
 		);
