@@ -1,3 +1,4 @@
+import {BigNumber, constants} from 'ethers';
 import {expect} from './chai-setup';
 import {setup} from './setup';
 import {waitFor} from './utils';
@@ -14,6 +15,14 @@ describe('Blockies', function () {
 		const {users, Blockies} = state;
 		await waitFor(users[0].Blockies.emitSelfTransferEvent(users[0].address));
 		expect(await Blockies.balanceOf(users[0].address)).to.be.equal(1);
+	});
+
+	it('keep operator approval after emitting first transfer event', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+		await waitFor(users[0].Blockies.approve(users[2].address, users[0].address));
+		await waitFor(users[0].Blockies.emitSelfTransferEvent(users[0].address));
+		expect(await Blockies.getApproved(users[0].address)).to.be.equal(users[2].address);
 	});
 
 	it('has correct balance after sending self nft', async function () {
@@ -58,5 +67,71 @@ describe('Blockies', function () {
 		expect(await Blockies.balanceOf(users[2].address), 'users[2]').to.be.equal(1);
 		expect(await Blockies.balanceOf(users[3].address), 'users[3]').to.be.equal(1);
 		expect(await Blockies.balanceOf(users[4].address), 'users[4]').to.be.equal(2);
+	});
+
+	it('return correct svg', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		expect(await Blockies.callStatic.tokenURI(users[0].address)).to.be.equal(
+			`data:application/json,{\"name\":\"0x70997970c51812dc3a010c7d01b50e0d17dc79c8\",\"description\":\"Blocky%200x70997970c51812dc3a010c7d01b50e0d17dc79c8%20generated%20on-chain\",\"image\":\"data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20shape-rendering='crispEdges'%20width='512'%20height='512'><g%20transform='scale(64)'><path%20fill='hsl(037,094%,044%)'%20d='M0,0h8v8h-8z'/><path%20fill='hsl(034,084%,063%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm-8,1m1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1z'/><path%20fill='hsl(174,089%,035%)'%20d='M0,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v1h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v1h-1zm1,0h1v1h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/></g></svg>\"}`
+		);
+	});
+
+	it('fails to return svg for address(0)', async function () {
+		const state = await setup();
+		const {Blockies} = state;
+
+		await expect(Blockies.callStatic.tokenURI(constants.AddressZero)).to.be.reverted;
+	});
+
+	it('synbol is BLOCKY', async function () {
+		const state = await setup();
+		const {Blockies} = state;
+
+		expect(await Blockies.callStatic.symbol()).to.be.equal('BLOCKY');
+	});
+
+	it('ownerAndLastTransferBlockNumberList', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		const list = await Blockies.callStatic.ownerAndLastTransferBlockNumberList([
+			users[1].address,
+			users[2].address
+		]);
+		expect(list[0].owner).to.be.equal(users[1].address);
+		expect(list[0].lastTransferBlockNumber).to.be.equal(0);
+		expect(list[1].owner).to.be.equal(users[2].address);
+		expect(list[1].lastTransferBlockNumber).to.be.equal(0);
+	});
+
+	it('ownerAndLastTransferBlockNumberList after transfers', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[3].address, users[1].address));
+		const list = await Blockies.callStatic.ownerAndLastTransferBlockNumberList([
+			users[1].address,
+			users[2].address
+		]);
+		expect(list[0].owner).to.be.equal(users[3].address);
+		expect(list[0].lastTransferBlockNumber).to.be.equal(5);
+		expect(list[1].owner).to.be.equal(users[2].address);
+		expect(list[1].lastTransferBlockNumber).to.be.equal(0);
+	});
+
+	it('totalSupply', async function () {
+		const state = await setup();
+		const {Blockies} = state;
+		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160).sub(1));
+	});
+
+	it('totalSupply after transfers', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[3].address, users[1].address));
+		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160).sub(1));
 	});
 });

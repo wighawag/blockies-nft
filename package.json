@@ -61,7 +61,7 @@
     "void:deploy": "hardhat deploy --report-gas",
     "test": "cross-env HARDHAT_DEPLOY_FIXTURE=true HARDHAT_COMPILE=true mocha --recursive test",
     "gas": "cross-env REPORT_GAS=true hardhat test",
-    "coverage": "rm -Rf artifacts && rm -Rf cache && pnpm execute localhost scripts/prepare-coverage.ts && cross-env HARDHAT_DEPLOY_FIXTURE=true COVERAGE_SRC=coverage-src hardhat coverage && rm -Rf artifacts && rm -Rf cache",
+    "coverage": "rm -Rf artifacts && rm -Rf cache && pnpm execute localhost scripts/prepare-coverage.ts && cross-env HARDHAT_DEPLOY_FIXTURE=true COVERAGE_SRC=coverage-src hardhat coverage || rm -Rf artifacts && rm -Rf cache",
     "dev:node": "cross-env MINING_INTERVAL=\"3000,5000\" hardhat node --hostname 0.0.0.0",
     "dev": "cross-env MINING_INTERVAL=\"3000,5000\" hardhat node --hostname 0.0.0.0 --watch",
     "geth": "node ./_scripts.js geth",
