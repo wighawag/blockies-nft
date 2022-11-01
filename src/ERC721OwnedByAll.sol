@@ -7,7 +7,7 @@ abstract contract ERC721OwnedByAll is BasicERC721, IERC721Supply {
 	/// @inheritdoc IERC721
 	function balanceOf(address owner) public view override returns (uint256 balance) {
 		if (owner == address(0)) {
-			revert InvalidOwner(owner);
+			revert InvalidAddress(owner);
 		}
 		balance = _balances[owner];
 		(, uint256 blockNumber) = _ownerAndBlockNumberOf(uint256(uint160(owner)));
