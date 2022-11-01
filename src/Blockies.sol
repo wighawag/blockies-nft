@@ -4,46 +4,45 @@ pragma solidity 0.8.16;
 import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 import "solidity-kit/solc_0.8/ERC173/interfaces/IERC173.sol";
+import "solidity-kit/solc_0.8/ERC721/TokenURI/interfaces/IContractURI.sol";
 import "./ERC721OwnedByAll.sol";
 
 /// @notice Blockies as NFT. Each ethereum address owns its own one. No minting needed.
 /// You can even use Permit (EIP-4494) to approve contracts via signatures.
 /// Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
 /// @title On-chain Blockies
-contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata {
+contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata, IContractURI {
 	error AlreadyClaimed();
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// TEMPLATE
 	// ------------------------------------------------------------------------------------------------------------------
-	bytes internal constant TEMPLATE =
-		"data:application/json,{\"name\":\"0x0000000000000000000000000000000000000000\",\"description\":\"Blocky%200x0000000000000000000000000000000000000000%20generated%20on-chain\",\"image\":\"data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20shape-rendering='crispEdges'%20width='512'%20height='512'><g%20transform='scale(64)'><path%20fill='hsl(000,000%,000%)'%20d='M0,0h8v8h-8z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/></g></svg>\"}";
+	bytes internal constant TOKEN_URI_TEMPLATE =
+		'data:application/json,{"name":"0x0000000000000000000000000000000000000000","description":"Blocky%200x0000000000000000000000000000000000000000%20generated%20on-chain","image":"';
 
-	// 33 start position for address in name
+	// 31 start position for address in name
 	// 41 = length of address - 1
-	// 3 =  number of "\"
-	uint256 internal constant ADDRESS_NAME_POS = 34 - 3 + 41; // 72
+	uint256 internal constant ADDRESS_NAME_POS = 31 + 41; // 72
 
-	// 22 = distance
+	// 18 = distance
 	// 9 = Blocky%20
 	// 41 = length of address - 1
-	// 4 = further number of "\"
-	uint256 internal constant ADDRESS_NAME_2_POS = ADDRESS_NAME_POS + 22 - 4 + 9 + 41; // 140
+	uint256 internal constant ADDRESS_NAME_2_POS = ADDRESS_NAME_POS + 18 + 9 + 41; // 140
 
-	// 184 = distance
-	// 4 = further number of "\"
-	// 23 = %20generated%20on-chain
-	uint256 internal constant COLOR_BG_POS = ADDRESS_NAME_2_POS + 23 + 184 - 4; // 343
+	bytes internal constant SVG_TEMPLATE =
+		"data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20shape-rendering='crispEdges'%20width='512'%20height='512'><g%20transform='scale(64)'><path%20fill='hsl(000,000%,000%)'%20d='M0,0h8v8h-8z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/></g></svg>";
+
+	uint256 internal constant COLOR_BG_POS = 168;
 
 	// 54 = distance
-	uint256 internal constant COLOR_1_POS = COLOR_BG_POS + 54; // 397
+	uint256 internal constant COLOR_1_POS = COLOR_BG_POS + 54; // 222
 	// 18 = distance
-	uint256 internal constant PATH_1_POS = COLOR_1_POS + 18; // 415
+	uint256 internal constant PATH_1_POS = COLOR_1_POS + 18; // 240
 
 	// 827 = distance
-	uint256 internal constant COLOR_2_POS = PATH_1_POS + 827; // 1242
+	uint256 internal constant COLOR_2_POS = PATH_1_POS + 827; // 1067
 	// 18 = distance
-	uint256 internal constant PATH_2_POS = COLOR_2_POS + 18; // 1260
+	uint256 internal constant PATH_2_POS = COLOR_2_POS + 18; // 1085
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// DATA AND TYPES
@@ -85,7 +84,23 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 
 	/// @inheritdoc IERC721Metadata
 	function tokenURI(uint256 id) external pure override returns (string memory str) {
-		return _tokenURI(id);
+		bytes memory metadata = TOKEN_URI_TEMPLATE;
+		_writeUintAsHex(metadata, ADDRESS_NAME_POS, id);
+		_writeUintAsHex(metadata, ADDRESS_NAME_2_POS, id);
+
+		return string(bytes.concat(metadata, _renderSVG(id), '"}'));
+	}
+
+	/// @inheritdoc IContractURI
+	function contractURI() external view returns (string memory) {
+		return
+			string(
+				bytes.concat(
+					'data:application/json,{"name":"Blockies","description":"On-chain%20Blockies","image":"data:image/svg+xml,"}',
+					_renderSVG(uint160(address(this))),
+					'"}'
+				)
+			);
 	}
 
 	/// @inheritdoc IERC165
@@ -253,16 +268,14 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		metadata[pos] = "1";
 	}
 
-	function _tokenURI(uint256 id) internal pure returns (string memory) {
-		bytes memory metadata = TEMPLATE;
-		_writeUintAsHex(metadata, ADDRESS_NAME_POS, id);
-		_writeUintAsHex(metadata, ADDRESS_NAME_2_POS, id);
+	function _renderSVG(uint256 id) internal pure returns (bytes memory) {
+		bytes memory svg = SVG_TEMPLATE;
 
 		Seed memory randseed = _seedrand(bytes(_addressToString(address(uint160(id)))));
 
-		_setColor(metadata, randseed, 1);
-		_setColor(metadata, randseed, 0);
-		_setColor(metadata, randseed, 2);
+		_setColor(svg, randseed, 1);
+		_setColor(svg, randseed, 0);
+		_setColor(svg, randseed, 2);
 
 		for (uint256 y = 0; y < 8; y++) {
 			uint8 p0 = uint8((_rand(randseed) * 23) / 2147483648 / 10);
@@ -270,16 +283,16 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 			uint8 p2 = uint8((_rand(randseed) * 23) / 2147483648 / 10);
 			uint8 p3 = uint8((_rand(randseed) * 23) / 2147483648 / 10);
 
-			_setPixel(metadata, 0, y, p0);
-			_setPixel(metadata, 1, y, p1);
-			_setPixel(metadata, 2, y, p2);
-			_setPixel(metadata, 3, y, p3);
-			_setPixel(metadata, 4, y, p3);
-			_setPixel(metadata, 5, y, p2);
-			_setPixel(metadata, 6, y, p1);
-			_setPixel(metadata, 7, y, p0);
+			_setPixel(svg, 0, y, p0);
+			_setPixel(svg, 1, y, p1);
+			_setPixel(svg, 2, y, p2);
+			_setPixel(svg, 3, y, p3);
+			_setPixel(svg, 4, y, p3);
+			_setPixel(svg, 5, y, p2);
+			_setPixel(svg, 6, y, p1);
+			_setPixel(svg, 7, y, p0);
 		}
 
-		return string(metadata);
+		return svg;
 	}
 }
