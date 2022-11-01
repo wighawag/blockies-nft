@@ -69,6 +69,8 @@ function mergeMethods(
 }
 
 async function main() {
+	Handlebars.registerHelper('eq', (a, b) => a == b);
+
 	const template = Handlebars.compile(fs.readFileSync('docs_template/contracts.hbs', {encoding: 'utf-8'}));
 	const namedDeployments = await deployments.all();
 	const list = [];

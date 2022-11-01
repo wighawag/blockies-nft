@@ -36,13 +36,13 @@ The return values of this function MUST describe the domain separator that is us
 
 
 Returns:
- 1. A bit map where bit i is set to 1 if and only if domain field i is present (0 ≤ i ≤ 4). Bits are read from least significant to most significant, and fields are indexed in the order that is specified by EIP-712, identical to the order in which they are listed in the function type.
- 1. EIP-712 name
- 1. EIP-712 version
- 1. EIP-712 chainId
- 1. EIP-712 name verifyingContract
- 1. EIP-712 salt
- 1. A list of EIP numbers that specify additional fields in the domain. The method to obtain the value for each of these additional fields and any conditions for inclusion are expected to be specified in the respective EIP. The value of fields does not affect their inclusion.
+ - `chainId`: EIP-712 chainId
+ - `extensions`: A list of EIP numbers that specify additional fields in the domain. The method to obtain the value for each of these additional fields and any conditions for inclusion are expected to be specified in the respective EIP. The value of fields does not affect their inclusion.
+ - `fields`: A bit map where bit i is set to 1 if and only if domain field i is present (0 ≤ i ≤ 4). Bits are read from least significant to most significant, and fields are indexed in the order that is specified by EIP-712, identical to the order in which they are listed in the function type.
+ - `name`: EIP-712 name
+ - `salt`: EIP-712 salt
+ - `verifyingContract`: EIP-712 name verifyingContract
+ - `version`: EIP-712 version
 
 
 ----
@@ -226,7 +226,7 @@ Params:
  - `interfaceID`: The interface identifier, as specified in ERC-165
 
 Returns:
- 1. `true` if the contract implements `interfaceID` and  `interfaceID` is not 0xffffffff, `false` otherwise
+ - `true` if the contract implements `interfaceID` and  `interfaceID` is not 0xffffffff, `false` otherwise
 
 
 ----

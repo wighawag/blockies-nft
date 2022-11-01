@@ -29,6 +29,15 @@ Params:
 
 {{#if natspec.returns.length}}
 Returns:
+{{#if (eq natspec.returns.length 1)}}
+{{#each natspec.returns}}
+{{#if name}}
+ - `{{name}}`: {{{description}}}
+{{else}}
+ - {{{description}}}
+{{/if}}
+{{/each}}
+{{else}}
 {{#each natspec.returns}}
 {{#if name}}
  - `{{name}}`: {{{description}}}
@@ -36,6 +45,7 @@ Returns:
  1. {{{description}}}
 {{/if}}
 {{/each}}
+{{/if}}
 {{/if}}
 
 {{/each}}
