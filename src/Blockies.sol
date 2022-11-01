@@ -2,8 +2,8 @@
 pragma solidity 0.8.16;
 
 import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
-import "solidity-kit/solc_0.8/ERC721/implementations/ERC721OwnedByAll.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
+import "./ERC721OwnedByAll.sol";
 
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata {
 	// ------------------------------------------------------------------------------------------------------------------
