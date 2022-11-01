@@ -58,9 +58,10 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	// CONSTRUCTOR
 	// ------------------------------------------------------------------------------------------------------------------
 
-	constructor(address initialOwnerOfBlockyZero) UsingERC712WithDynamicChainId(address(0)) {
-		_transferFrom(address(0), initialOwnerOfBlockyZero, 0, false);
-	}
+	constructor(address initialOwnerOfBlockyZero)
+		UsingERC712WithDynamicChainId(address(0))
+		ERC721OwnedByAll(initialOwnerOfBlockyZero)
+	{}
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// EXTERNAL INTERFACE
@@ -96,6 +97,17 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	///   As such it keeps the token's operator-approval state and will re-emit an Approval event to indicate that.
 	/// @param id tokenID to emit the event for.
 	function emitSelfTransferEvent(uint256 id) external {
+		require(id < 2**160, "NONEXISTENT_TOKEN");
+		(address owner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
+		emit Transfer(owner, owner, id);
+
+		if (operatorEnabled) {
+			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec
+			emit Approval(owner, _operators[id], id);
+		}
+	}
+
+	function claimOwnership(uint256 id) external {
 		require(id < 2**160, "NONEXISTENT_TOKEN");
 		(address owner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
 		emit Transfer(owner, owner, id);

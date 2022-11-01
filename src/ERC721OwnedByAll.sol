@@ -4,6 +4,14 @@ pragma solidity ^0.8.0;
 import "solidity-kit/solc_0.8/ERC721/implementations/BasicERC721.sol";
 
 abstract contract ERC721OwnedByAll is BasicERC721, IERC721Supply {
+	constructor(address initialOwnerOfTokenIdZero) {
+		if (initialOwnerOfTokenIdZero == address(0)) {
+			//ensure address zero do not own any token
+			initialOwnerOfTokenIdZero = address(this);
+		}
+		_transferFrom(address(0), initialOwnerOfTokenIdZero, 0, false);
+	}
+
 	/// @inheritdoc IERC721
 	function balanceOf(address owner) public view override returns (uint256 balance) {
 		balance = super.balanceOf(owner);
