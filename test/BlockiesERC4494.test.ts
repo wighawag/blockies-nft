@@ -45,7 +45,35 @@ describe('Blockies ERC4494', function () {
 		);
 		await permitTX.wait();
 
-		expect(await Blockies['nonces(uint256)'](users[0].address)).to.be.equal(4);
-		expect(await Blockies.tokenNonces(users[0].address)).to.be.equal(4);
+		expect(await Blockies['nonces(uint256)'](users[0].address)).to.be.equal(1);
+		expect(await Blockies.tokenNonces(users[0].address)).to.be.equal(1);
+	});
+
+	it('single permit update token nonce after transfer', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		await waitFor(users[0].Blockies.transferFrom(users[0].address, users[3].address, users[0].address));
+
+		const nonce = await Blockies.tokenNonces(users[0].address);
+
+		const signature = await users[3].BlockiesPermit.sign({
+			spender: users[1].address,
+			tokenId: users[0].address,
+			nonce,
+			deadline: constants.MaxUint256
+		});
+
+		const permitTX = await users[1].Blockies.permit(
+			users[1].address,
+			users[0].address,
+			constants.MaxUint256,
+			signature
+		);
+		await permitTX.wait();
+
+		const newNonce = nonce.add(1);
+		expect(await Blockies['nonces(uint256)'](users[0].address)).to.be.equal(newNonce);
+		expect(await Blockies.tokenNonces(users[0].address)).to.be.equal(newNonce);
 	});
 });

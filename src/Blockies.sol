@@ -95,7 +95,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	/// @param id tokenID to emit the event for.
 	function emitSelfTransferEvent(uint256 id) external {
 		require(id < 2**160, "NONEXISTENT_TOKEN");
-		(address owner, , bool operatorEnabled) = _ownerBlockNumberAndOperatorEnabledOf(id);
+		(address owner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
 		emit Transfer(owner, owner, id);
 
 		if (operatorEnabled) {
