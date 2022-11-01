@@ -27,7 +27,7 @@ specifiers:
   prettier: ^2.6.2
   prettier-plugin-solidity: ^1.0.0-beta.19
   solidity-coverage: ^0.7.20
-  solidity-kit: ^0.1.7
+  solidity-kit: ^0.1.8
   ts-generator: ^0.1.1
   ts-node: ^10.7.0
   typechain: ^8.0.0
@@ -61,7 +61,7 @@ devDependencies:
   prettier: 2.7.1
   prettier-plugin-solidity: 1.0.0-beta.24_prettier@2.7.1
   solidity-coverage: 0.7.21
-  solidity-kit: 0.1.7
+  solidity-kit: 0.1.8
   ts-generator: 0.1.1
   ts-node: 10.9.1_tphhiizkxv2hzwkunblc3hbmra
   typechain: 8.1.0_typescript@4.8.2
@@ -5771,8 +5771,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /solidity-kit/0.1.7:
-    resolution: {integrity: sha512-VJD0mtE/i5348HTHIpuyFfcKwACYlRiAdgqiLAQUnk9hUinwdThzfT1OtXShahVs/q1Lv+hnkh7zckizFToD2A==}
+  /solidity-kit/0.1.8:
+    resolution: {integrity: sha512-i0sCEsQS6bU5GxsGcDLDxJ/BzLlSvRLM0I9bBgLiiO8Abj/l+rRVUhWT9wjBSJvSIMe9maIEYIC4KLQYVPo5hw==}
     dev: true
 
   /source-map-support/0.5.21:
