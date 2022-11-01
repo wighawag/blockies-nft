@@ -1,5 +1,5 @@
-import {ethers, deployments, getUnnamedAccounts} from 'hardhat';
-import {setupUsers} from '../utils/users';
+import {ethers, deployments, getUnnamedAccounts, getNamedAccounts} from 'hardhat';
+import {setupUser, setupUsers} from '../utils/users';
 import {Blockies} from '../../typechain';
 import {ERC4494SignerFactory, ERC4494StylePermitForAllSignerFactory} from '../utils/eip712-signers';
 
@@ -10,6 +10,7 @@ export const setup = deployments.createFixture(async () => {
 	const contracts = {
 		Blockies: <Blockies>await ethers.getContract('Blockies')
 	};
+	const {initialOwnerOfBlockyZero} = await getNamedAccounts();
 	const BlockiesPermit = await ERC4494SignerFactory.createSignerFactory(contracts.Blockies);
 	const BlockiesPermitForAll = await ERC4494StylePermitForAllSignerFactory.createSignerFactory(contracts.Blockies);
 
@@ -17,7 +18,11 @@ export const setup = deployments.createFixture(async () => {
 
 	return {
 		...contracts,
-		users
+		users,
+		initialOwnerOfBlockyZero: await setupUser(initialOwnerOfBlockyZero, contracts, {
+			BlockiesPermit,
+			BlockiesPermitForAll
+		})
 	};
 });
 

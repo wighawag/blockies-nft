@@ -78,11 +78,18 @@ describe('Blockies', function () {
 		);
 	});
 
-	it('fails to return svg for address(0)', async function () {
-		const state = await setup();
-		const {Blockies} = state;
+	// it('fails to return svg for address(0)', async function () {
+	// 	const state = await setup();
+	// 	const {Blockies} = state;
 
-		await expect(Blockies.callStatic.tokenURI(constants.AddressZero)).to.be.reverted;
+	// 	await expect(Blockies.callStatic.tokenURI(constants.AddressZero)).to.be.reverted;
+	// });
+
+	it('blocky address(0) owned by initialOwnerOfBlockyZero', async function () {
+		const state = await setup();
+		const {Blockies, initialOwnerOfBlockyZero} = state;
+
+		expect(await Blockies.callStatic.ownerOf(constants.AddressZero)).to.be.equal(initialOwnerOfBlockyZero.address);
 	});
 
 	it('synbol is BLOCKY', async function () {
@@ -124,7 +131,7 @@ describe('Blockies', function () {
 	it('totalSupply', async function () {
 		const state = await setup();
 		const {Blockies} = state;
-		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160).sub(1));
+		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160));
 	});
 
 	it('totalSupply after transfers', async function () {
@@ -132,6 +139,6 @@ describe('Blockies', function () {
 		const {users, Blockies} = state;
 
 		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[3].address, users[1].address));
-		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160).sub(1));
+		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160));
 	});
 });

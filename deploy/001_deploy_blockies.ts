@@ -6,11 +6,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const {deployments, getNamedAccounts} = hre;
 	const {deploy} = deployments;
 
-	const {deployer} = await getNamedAccounts();
+	const {deployer, initialOwnerOfBlockyZero} = await getNamedAccounts();
 
 	await deploy('Blockies', {
 		from: deployer,
 		log: true,
+		args: [initialOwnerOfBlockyZero],
 		// proxy: network.name !== 'mainnet',
 		deterministicDeployment: true,
 		autoMine: true,

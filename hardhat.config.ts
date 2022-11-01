@@ -23,7 +23,11 @@ const config: HardhatUserConfig = {
 		]
 	},
 	namedAccounts: {
-		deployer: 0
+		deployer: 0,
+		initialOwnerOfBlockyZero: {
+			default: 'deployer',
+			1: 'ronan.eth'
+		}
 	},
 	networks: addForkConfiguration({
 		hardhat: {

@@ -39,7 +39,7 @@ abstract contract ERC721OwnedByAll is BasicERC721, IERC721Supply {
 
 	/// @inheritdoc IERC721Supply
 	function totalSupply() external pure returns (uint256) {
-		return 2**160 - 1; // do not count token with id zero whose owner would otherwise be the zero address
+		return 2**160;
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------

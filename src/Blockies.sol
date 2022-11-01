@@ -58,7 +58,9 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	// CONSTRUCTOR
 	// ------------------------------------------------------------------------------------------------------------------
 
-	constructor() UsingERC712WithDynamicChainId(address(0)) {}
+	constructor(address initialOwnerOfBlockyZero) UsingERC712WithDynamicChainId(address(0)) {
+		_transferFrom(address(0), initialOwnerOfBlockyZero, 0, false);
+	}
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// EXTERNAL INTERFACE
