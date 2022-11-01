@@ -59,7 +59,7 @@ const config: HardhatUserConfig = {
 		}
 	}),
 	paths: {
-		sources: 'src'
+		sources: process.env.COVERAGE_SRC ? process.env.COVERAGE_SRC : 'src'
 	},
 	gasReporter: {
 		currency: 'USD',
