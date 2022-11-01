@@ -141,4 +141,33 @@ describe('Blockies', function () {
 		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[3].address, users[1].address));
 		expect(await Blockies.totalSupply()).to.be.equal(BigNumber.from(2).pow(160));
 	});
+
+	it('claim ownership of zero fails', async function () {
+		const state = await setup();
+		const {users} = state;
+
+		await expect(users[0].Blockies.claimOwnership(constants.AddressZero)).to.be.reverted;
+	});
+
+	it('claim ownership of zero Blockies fails', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+
+		await expect(users[0].Blockies.claimOwnership(Blockies.address)).to.be.reverted;
+	});
+
+	it('claim ownership of self fails', async function () {
+		const state = await setup();
+		const {users} = state;
+
+		await expect(users[0].Blockies.claimOwnership(users[0].address)).to.be.reverted;
+	});
+
+	it('claim ownership by contract owner succeed', async function () {
+		const state = await setup();
+		const {users, initialOwnerOfBlockyZero, Blockies} = state;
+
+		await waitFor(initialOwnerOfBlockyZero.Blockies.claimOwnership(Blockies.address));
+		expect(await Blockies.callStatic.ownerOf(Blockies.address)).to.be.equal(initialOwnerOfBlockyZero.address);
+	});
 });

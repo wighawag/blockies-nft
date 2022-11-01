@@ -3,13 +3,16 @@ pragma solidity 0.8.16;
 
 import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
+import "solidity-kit/solc_0.8/ERC173/interfaces/IERC173.sol";
 import "./ERC721OwnedByAll.sol";
 
 /// @notice Blockies as NFT. Each ethereum address owns its own one. No minting needed.
 /// You can even use Permit (EIP-4494) to approve contracts via signatures.
 /// Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
-/// @title Blockies on-chain
+/// @title On-chain Blockies
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata {
+	error AlreadyClaimed();
+
 	// ------------------------------------------------------------------------------------------------------------------
 	// TEMPLATE
 	// ------------------------------------------------------------------------------------------------------------------
@@ -54,6 +57,9 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		int32 s3;
 	}
 
+	/// @notice owner of the contract, can claim its
+	address public immutable owner;
+
 	// ------------------------------------------------------------------------------------------------------------------
 	// CONSTRUCTOR
 	// ------------------------------------------------------------------------------------------------------------------
@@ -61,7 +67,9 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	constructor(address initialOwnerOfBlockyZero)
 		UsingERC712WithDynamicChainId(address(0))
 		ERC721OwnedByAll(initialOwnerOfBlockyZero)
-	{}
+	{
+		owner = initialOwnerOfBlockyZero;
+	}
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// EXTERNAL INTERFACE
@@ -69,7 +77,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 
 	/// @inheritdoc IERC721Metadata
 	function name() public pure override(IERC721Metadata, Named) returns (string memory) {
-		return "Blockies";
+		return "On-chain Blockies";
 	}
 
 	/// @inheritdoc IERC721Metadata
@@ -97,25 +105,37 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	///   As such it keeps the token's operator-approval state and will re-emit an Approval event to indicate that.
 	/// @param id tokenID to emit the event for.
 	function emitSelfTransferEvent(uint256 id) external {
-		require(id < 2**160, "NONEXISTENT_TOKEN");
-		(address owner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
-		emit Transfer(owner, owner, id);
+		(address currentowner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
+		if (currentowner == address(0)) {
+			revert NonExistentToken(id);
+		}
+
+		emit Transfer(currentowner, currentowner, id);
 
 		if (operatorEnabled) {
 			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec
-			emit Approval(owner, _operators[id], id);
+			emit Approval(currentowner, _operators[id], id);
 		}
 	}
 
+	/// @notice claim ownership of the blocky if you are the owner of a contract
+	/// @param id blocky address to claim
 	function claimOwnership(uint256 id) external {
-		require(id < 2**160, "NONEXISTENT_TOKEN");
-		(address owner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
-		emit Transfer(owner, owner, id);
-
-		if (operatorEnabled) {
-			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec
-			emit Approval(owner, _operators[id], id);
+		(address currentowner, uint256 nonce) = _ownerAndNonceOf(id);
+		if (currentowner == address(0)) {
+			revert NonExistentToken(id);
 		}
+
+		bool registered = (nonce >> 24) != 0;
+		if (registered) {
+			revert AlreadyClaimed();
+		}
+
+		if (currentowner.code.length == 0 || IERC173(currentowner).owner() != msg.sender) {
+			revert NotAuthorized();
+		}
+
+		_transferFrom(currentowner, msg.sender, id, false);
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------
