@@ -1,5 +1,5 @@
 
-## Blockies on-chain
+## On-chain Blockies
 Blockies as NFT. Each ethereum address owns its own one. No minting needed. You can even use Permit (EIP-4494) to approve contracts via signatures. Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
 
 
@@ -26,6 +26,17 @@ Params:
 
 Returns:
  - `balance`: The number of tokens owned by the address.
+
+
+----
+
+### **claimOwnership(uint256)**
+
+claim ownership of the blocky if you are the owner of a contract
+
+Params:
+ - `id`: blocky address to claim
+
 
 
 ----
@@ -278,6 +289,15 @@ EIP-712 Domain separator hash
 ### **name()**
 
 A descriptive name for a collection of NFTs in this contract
+
+
+
+
+----
+
+### **owner()**
+
+owner of the contract, can claim this contract&#x27;s blocky no other role granted
 
 
 

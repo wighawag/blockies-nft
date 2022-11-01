@@ -57,18 +57,16 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		int32 s3;
 	}
 
-	/// @notice owner of the contract, can claim its
+	/// @notice owner of the contract, can claim this contract's blocky
+	/// no other role granted
 	address public immutable owner;
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// CONSTRUCTOR
 	// ------------------------------------------------------------------------------------------------------------------
 
-	constructor(address initialOwnerOfBlockyZero)
-		UsingERC712WithDynamicChainId(address(0))
-		ERC721OwnedByAll(initialOwnerOfBlockyZero)
-	{
-		owner = initialOwnerOfBlockyZero;
+	constructor(address contractOwner) UsingERC712WithDynamicChainId(address(0)) ERC721OwnedByAll(contractOwner) {
+		owner = contractOwner;
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------
