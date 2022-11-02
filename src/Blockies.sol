@@ -2,17 +2,21 @@
 pragma solidity 0.8.16;
 
 import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
-import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 import "solidity-kit/solc_0.8/ERC173/interfaces/IERC173.sol";
 import "solidity-kit/solc_0.8/ERC721/TokenURI/interfaces/IContractURI.sol";
+
+import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 import "solidity-kit/solc_0.8/ERC173/implementations/Owned.sol";
+
 import "./ERC721OwnedByAll.sol";
 
 /// @notice Blockies as NFT. Each ethereum address owns its own Blocky NFT. No minting needed.
-/// You can even use Permit (EIP-4494) to approve contracts via signatures.
-/// Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
+/// You can even use Permit (EIP-4494) to approve transfer from contracts via signatures.
+/// Note though that unless you transfer or call `emitSelfTransferEvent` indexers would not know of your token.
+/// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`
 /// @title On-chain Blockies
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata, IContractURI, Owned {
+	/// @notice When you attempt to claim a Blocky using owner() but the Blocky has already been claimed or transfered
 	error AlreadyClaimed();
 
 	// ------------------------------------------------------------------------------------------------------------------

@@ -2,11 +2,13 @@
 {{#if userdoc}}
 
 {{#if devdoc.title}}
-## {{devdoc.title}}
+# {{devdoc.title}}
 {{else}}
-## {{name}}
+# {{name}}
 {{/if}}
 {{{userdoc.notice}}}
+
+## **Methods**
 
 {{#each methods}}
 
@@ -50,18 +52,46 @@ Returns:
 
 {{/each}}
 
+## **Events**
+
 {{#each events}}
-## `event` {{signature}}
+### `event` {{signature}}
 
-{{{natspec.userdoc}}}
-{{{natspec.devdoc}}}
+{{natspec.notice}}
 
-**Params**
+{{#if natspec.params.length}}
+Params:
 {{#each natspec.params}}
- - `{{param}}`: {{{description}}}
+{{#if name}}
+ - `{{name}}`: {{{description}}}
+{{else}}
+ 1. {{{description}}}
+{{/if}}
 {{/each}}
+{{/if}}
 
 {{/each}}
+
+## **Errors**
+
+{{#each errors}}
+### `error` {{signature}}
+
+{{natspec.notice}}
+
+{{#if natspec.params.length}}
+Params:
+{{#each natspec.params}}
+{{#if name}}
+ - `{{name}}`: {{{description}}}
+{{else}}
+ 1. {{{description}}}
+{{/if}}
+{{/each}}
+{{/if}}
+
+{{/each}}
+
 
 {{/if}}
 {{/each}}

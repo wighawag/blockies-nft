@@ -1,6 +1,8 @@
 
-## On-chain Blockies
-Blockies as NFT. Each ethereum address owns its own one. No minting needed. You can even use Permit (EIP-4494) to approve contracts via signatures. Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
+# On-chain Blockies
+Blockies as NFT. Each ethereum address owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfer from contracts via signatures. Note though that unless you transfer or call `emitSelfTransferEvent` indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`
+
+## **Methods**
 
 
 ----
@@ -229,6 +231,17 @@ Params:
 
 ----
 
+### **setENSName(string)**
+
+set the reverse-record name for this contract
+
+Params:
+ - `name`: ENS name to set
+
+
+
+----
+
 ### **supportsInterface(bytes4)**
 
 Query if a contract implements an interface
@@ -277,9 +290,41 @@ Params:
 
 ----
 
+### **transferOwnership(address)**
+
+Set the address of the new owner of the contract
+
+Params:
+ - `newOwner`: The address of the new owner of the contract
+
+
+
+----
+
+### **withdrawERC20(address,address)**
+
+withdraw the total balance of a particular ERC20 token owned by this contract.
+
+Params:
+ - `to`: address that will receive the tokens
+ - `token`: ERC20 contract address to withdraw
+
+
+
+----
+
 ### **DOMAIN_SEPARATOR()**
 
 EIP-712 Domain separator hash
+
+
+
+
+----
+
+### **contractURI()**
+
+Returns the Uniform Resource Identifier (URI) for the token collection.
 
 
 
@@ -297,7 +342,7 @@ A descriptive name for a collection of NFTs in this contract
 
 ### **owner()**
 
-owner of the contract, can claim this contract&#x27;s blocky no other role granted
+Get the address of the owner
 
 
 
@@ -308,6 +353,87 @@ owner of the contract, can claim this contract&#x27;s blocky no other role grant
 
 An abbreviated name for NFTs in this contract
 
+
+
+
+## **Events**
+
+### `event` Approval(address,address,uint256)
+
+Triggered when a token is approved to be sent by another account  Note tat the approval get reset when a Transfer event for that same token is emitted.
+
+
+### `event` ApprovalForAll(address,address,bool)
+
+Triggered when an account approve or disaprove another to transfer on its behalf
+
+
+### `event` OwnershipTransferred(address,address)
+
+This emits when ownership of the contract changes.
+
+
+### `event` Transfer(address,address,uint256)
+
+Triggered when a token is transferred
+
+
+
+## **Errors**
+
+### `error` DeadlineOver(uint256,uint256)
+
+The permit has expired
+
+Params:
+ - `currentTime`: time at which the error happen
+ - `deadline`: the deadline
+
+### `error` InvalidAddress(address)
+
+An invalid address is specified (for example: zero address)
+
+Params:
+ - `addr`: invalid address
+
+### `error` NonExistentToken(uint256)
+
+The token does not exist
+
+Params:
+ - `tokenId`: id of the expected token
+
+### `error` NotOwner(address,address)
+
+The address from which the token is sent is not the current owner
+
+Params:
+ - `currentOwner`: the current owner
+ - `provided`: the address expected to be the current owner
+
+### `error` AlreadyClaimed()
+
+When you attempt to claim a Blocky using owner() but the Blocky has already been claimed or transfered
+
+
+### `error` InvalidSignature()
+
+The signature do not match the expected signer
+
+
+### `error` NonceOverflow()
+
+The Nonce overflowed, make a transfer to self to allow new nonces.
+
+
+### `error` NotAuthorized()
+
+Not authorized to perform this operation
+
+
+### `error` TransferRejected()
+
+The Transfer was rejected by the destination
 
 
 

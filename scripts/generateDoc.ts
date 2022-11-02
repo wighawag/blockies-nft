@@ -12,22 +12,38 @@ function mergeMethods(
 	b: {[name: string]: {notice?: string}}
 ): Method[] {
 	const merged: Merged = {};
-	for (const ak of Object.keys(a)) {
-		const singleA = a[ak];
-		const singleMerge: SingleMerge = merged[ak] || {signature: ak};
-		for (const k of Object.keys(a[ak])) {
-			(singleMerge as any)[k] = (singleA as any)[k];
+	if (a) {
+		for (const ak of Object.keys(a)) {
+			let singleA = a[ak];
+
+			if (Array.isArray(singleA)) {
+				singleA = singleA[0];
+				// console.log(`singleA`, singleA);
+			}
+			const singleMerge: SingleMerge = merged[ak] || {signature: ak};
+
+			for (const k of Object.keys(singleA)) {
+				(singleMerge as any)[k] = (singleA as any)[k];
+			}
+			merged[ak] = singleMerge;
 		}
-		merged[ak] = singleMerge;
 	}
-	for (const bk of Object.keys(b)) {
-		const singleB = b[bk];
-		const singleMerge: SingleMerge = merged[bk] || {signature: bk};
-		for (const k of Object.keys(b[bk])) {
-			(singleMerge as any)[k] = (singleB as any)[k];
+
+	if (b) {
+		for (const bk of Object.keys(b)) {
+			let singleB = b[bk];
+			if (Array.isArray(singleB)) {
+				singleB = singleB[0];
+				// console.log(`singleB`, singleB);
+			}
+			const singleMerge: SingleMerge = merged[bk] || {signature: bk};
+			for (const k of Object.keys(singleB)) {
+				(singleMerge as any)[k] = (singleB as any)[k];
+			}
+			merged[bk] = singleMerge;
 		}
-		merged[bk] = singleMerge;
 	}
+
 	const methodList: Method[] = [];
 	for (const key of Object.keys(merged)) {
 		const rawNatspec = merged[key];
@@ -36,12 +52,12 @@ function mergeMethods(
 			returns = Object.keys(rawNatspec.returns).map((v) => {
 				if (v.startsWith('_') && !isNaN(parseInt(v.slice(1)))) {
 					return {
-						description: rawNatspec.returns[v]
+						description: rawNatspec.returns[v],
 					};
 				} else {
 					return {
 						name: v,
-						description: rawNatspec.returns[v]
+						description: rawNatspec.returns[v],
 					};
 				}
 			});
@@ -51,7 +67,7 @@ function mergeMethods(
 			params = Object.keys(rawNatspec.params).map((v) => {
 				return {
 					name: v,
-					description: rawNatspec.params[v]
+					description: rawNatspec.params[v],
 				};
 			});
 		}
@@ -61,8 +77,8 @@ function mergeMethods(
 			natspec: {
 				returns,
 				params,
-				notice
-			}
+				notice,
+			},
 		});
 	}
 	return methodList;
@@ -80,7 +96,9 @@ async function main() {
 			name,
 			devdoc: deployment.devdoc,
 			userdoc: deployment.userdoc,
-			methods: mergeMethods(deployment.devdoc?.methods, deployment.userdoc?.methods)
+			methods: mergeMethods(deployment.devdoc?.methods, deployment.userdoc?.methods),
+			errors: mergeMethods(deployment.devdoc?.errors, deployment.userdoc?.errors),
+			events: mergeMethods(deployment.devdoc?.events, deployment.userdoc?.events),
 		});
 	}
 
