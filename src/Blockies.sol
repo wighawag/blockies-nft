@@ -112,8 +112,8 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IER
 		return BasicERC721.supportsInterface(interfaceID) || UsingERC4494Permit.supportsInterface(interfaceID);
 	}
 
-	/// @notice emit Transfer event so that indexer can pick it up.
-	///   This can be called by anyone at any time and does not change state
+	/// @notice emit a Transfer event where from == to so that indexers can scan the token.
+	///   This can be called by anyone at any time and does not change state.
 	///   As such it keeps the token's approval state and will re-emit an Approval event to indicate that if needed.
 	/// @param tokenID token to emit the event for.
 	function emitSelfTransferEvent(uint256 tokenID) external {
@@ -130,7 +130,8 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IER
 		}
 	}
 
-	/// @notice claim ownership of the blocky if you are the owner of a contract.
+	/// @notice claim ownership of the blocky owned by a contract.
+	///   Will only work  if you are the owner of that contract (EIP-173).
 	/// @param tokenID blocky address to claim
 	function claimOwnership(uint256 tokenID) external {
 		(address currentowner, uint256 nonce) = _ownerAndNonceOf(tokenID);

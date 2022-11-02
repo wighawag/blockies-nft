@@ -1,8 +1,17 @@
 
 # On-chain Blockies
-Blockies as NFT. Each ethereum address owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfer from contracts via signatures. Note though that unless you transfer or call `emitSelfTransferEvent` indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`
+Blockies as NFTs. Each ethereum address owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures. Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
 
 ## **Methods**
+
+
+----
+
+### **DOMAIN_SEPARATOR()**
+
+EIP-712 Domain separator hash
+
+
 
 
 ----
@@ -13,7 +22,7 @@ Approve an operator to transfer a specific token on the senders behalf.
 
 Params:
  - `operator`: The address receiving the approval.
- - `tokenId`: The id of the token.
+ - `tokenID`: The id of the token.
 
 
 
@@ -34,10 +43,19 @@ Returns:
 
 ### **claimOwnership(uint256)**
 
-claim ownership of the blocky if you are the owner of a contract
+claim ownership of the blocky owned by a contract.   Will only work  if you are the owner of that contract (EIP-173).
 
 Params:
- - `id`: blocky address to claim
+ - `tokenID`: blocky address to claim
+
+
+
+----
+
+### **contractURI()**
+
+Returns the Uniform Resource Identifier (URI) for the token collection.
+
 
 
 
@@ -49,23 +67,23 @@ The return values of this function MUST describe the domain separator that is us
 
 
 Returns:
- - `chainId`: EIP-712 chainId
- - `extensions`: A list of EIP numbers that specify additional fields in the domain. The method to obtain the value for each of these additional fields and any conditions for inclusion are expected to be specified in the respective EIP. The value of fields does not affect their inclusion.
  - `fields`: A bit map where bit i is set to 1 if and only if domain field i is present (0 ≤ i ≤ 4). Bits are read from least significant to most significant, and fields are indexed in the order that is specified by EIP-712, identical to the order in which they are listed in the function type.
  - `name`: EIP-712 name
- - `salt`: EIP-712 salt
- - `verifyingContract`: EIP-712 name verifyingContract
  - `version`: EIP-712 version
+ - `chainID`: EIP-712 chainID
+ - `verifyingContract`: EIP-712 name verifyingContract
+ - `salt`: EIP-712 salt
+ - `extensions`: A list of EIP numbers that specify additional fields in the domain. The method to obtain the value for each of these additional fields and any conditions for inclusion are expected to be specified in the respective EIP. The value of fields does not affect their inclusion.
 
 
 ----
 
 ### **emitSelfTransferEvent(uint256)**
 
-emit Transfer event so that indexer can pick it up.   This can be called by anyone at any time and does not change state   As such it keeps the token&#x27;s operator-approval state and will re-emit an Approval event to indicate that.
+emit a Transfer event where from &#x3D;&#x3D; to so that indexers can scan the token.   This can be called by anyone at any time and does not change state.   As such it keeps the token&#x27;s approval state and will re-emit an Approval event to indicate that if needed.
 
 Params:
- - `id`: tokenID to emit the event for.
+ - `tokenID`: token to emit the event for.
 
 
 
@@ -76,7 +94,7 @@ Params:
 Get the approved operator for a specific token.
 
 Params:
- - `tokenId`: The id of the token.
+ - `tokenID`: The id of the token.
 
 Returns:
  - `operator`: The address of the operator.
@@ -89,11 +107,31 @@ Returns:
 Check if the sender approved the operator.
 
 Params:
- - `operator`: The address of the operator.
  - `owner`: The address of the owner.
+ - `operator`: The address of the operator.
 
 Returns:
  - `isOperator`: The status of the approval.
+
+
+----
+
+### **name()**
+
+A descriptive name for a collection of NFTs in this contract
+
+
+
+
+----
+
+### **nonces(uint256)**
+
+Allows to retrieve current nonce for token
+
+
+Returns:
+ - `nonce`: token nonce
 
 
 ----
@@ -111,15 +149,11 @@ Returns:
 
 ----
 
-### **nonces(uint256)**
+### **owner()**
 
-Allows to retrieve current nonce for token
+Get the address of the owner
 
-Params:
- - `tokenId`: token id
 
-Returns:
- - `nonce`: token nonce
 
 
 ----
@@ -145,8 +179,8 @@ Params:
  - `id`: The id of the token.
 
 Returns:
- - `blockNumber`: The blocknumber at which the last transfer of that id happened.
  - `owner`: The address of the token owner.
+ - `blockNumber`: The blocknumber at which the last transfer of that id happened.
 
 
 ----
@@ -156,7 +190,7 @@ Returns:
 Get the owner of a token.
 
 Params:
- - `tokenId`: The id of the token.
+ - `tokenID`: The id of the token.
 
 Returns:
  - `owner`: The address of the token owner.
@@ -169,10 +203,9 @@ Returns:
 function to be called by anyone to approve &#x60;spender&#x60; using a Permit signature
 
 Params:
- - `deadline`: the deadline for the permit to be used
- - `signature`: permit
  - `spender`: the actor to approve
- - `tokenId`: the token id
+ - `tokenID`: the token id
+ - `deadline`: the deadline for the permit to be used
 
 
 
@@ -183,10 +216,8 @@ Params:
 function to be called by anyone to approve &#x60;spender&#x60; using a Permit signature
 
 Params:
- - `deadline`: the deadline for the permit to be used
- - `signature`: permit
- - `signer`: the one giving permission
  - `spender`: the actor to approve
+ - `deadline`: the deadline for the permit to be used
 
 
 
@@ -199,7 +230,7 @@ Transfer a token between 2 addresses letting the receiver know of the transfer.
 Params:
  - `from`: The send of the token.
  - `to`: The recipient of the token.
- - `tokenId`: The id of the token.
+ - `tokenID`: The id of the token.
 
 
 
@@ -210,10 +241,10 @@ Params:
 Transfer a token between 2 addresses letting the receiver knows of the transfer.
 
 Params:
- - `data`: Additional data.
  - `from`: The sender of the token.
  - `to`: The recipient of the token.
- - `tokenId`: The id of the token.
+ - `tokenID`: The id of the token.
+ - `data`: Additional data.
 
 
 
@@ -224,8 +255,8 @@ Params:
 Set the approval for an operator to manage all the tokens of the sender.
 
 Params:
- - `approved`: The determination of the approval.
  - `operator`: The address receiving the approval.
+ - `approved`: The determination of the approval.
 
 
 
@@ -249,8 +280,15 @@ Query if a contract implements an interface
 Params:
  - `interfaceID`: The interface identifier, as specified in ERC-165
 
-Returns:
- - `true` if the contract implements `interfaceID` and  `interfaceID` is not 0xffffffff, `false` otherwise
+
+
+----
+
+### **symbol()**
+
+An abbreviated name for NFTs in this contract
+
+
 
 
 ----
@@ -260,7 +298,7 @@ Returns:
 Allows to retrieve current nonce for token
 
 Params:
- - `tokenId`: token id
+ - `tokenID`: token id
 
 Returns:
  - `nonce`: token nonce
@@ -272,6 +310,8 @@ Returns:
 
 A distinct Uniform Resource Identifier (URI) for a given asset.
 
+Params:
+ - `tokenID`: id of the token being queried.
 
 
 
@@ -284,7 +324,7 @@ Transfer a token between 2 addresses.
 Params:
  - `from`: The sender of the token.
  - `to`: The recipient of the token.
- - `tokenId`: The id of the token.
+ - `tokenID`: The id of the token.
 
 
 
@@ -296,63 +336,6 @@ Set the address of the new owner of the contract
 
 Params:
  - `newOwner`: The address of the new owner of the contract
-
-
-
-----
-
-### **withdrawERC20(address,address)**
-
-withdraw the total balance of a particular ERC20 token owned by this contract.
-
-Params:
- - `to`: address that will receive the tokens
- - `token`: ERC20 contract address to withdraw
-
-
-
-----
-
-### **DOMAIN_SEPARATOR()**
-
-EIP-712 Domain separator hash
-
-
-
-
-----
-
-### **contractURI()**
-
-Returns the Uniform Resource Identifier (URI) for the token collection.
-
-
-
-
-----
-
-### **name()**
-
-A descriptive name for a collection of NFTs in this contract
-
-
-
-
-----
-
-### **owner()**
-
-Get the address of the owner
-
-
-
-
-----
-
-### **symbol()**
-
-An abbreviated name for NFTs in this contract
-
 
 
 
@@ -381,6 +364,11 @@ Triggered when a token is transferred
 
 ## **Errors**
 
+### `error` AlreadyClaimed()
+
+You attempted to claim a Blocky from an EIP-173 contract (using owner()) while the Blocky has already been claimed or transfered.
+
+
 ### `error` DeadlineOver(uint256,uint256)
 
 The permit has expired
@@ -396,30 +384,17 @@ An invalid address is specified (for example: zero address)
 Params:
  - `addr`: invalid address
 
+### `error` InvalidSignature()
+
+The signature do not match the expected signer
+
+
 ### `error` NonExistentToken(uint256)
 
 The token does not exist
 
 Params:
- - `tokenId`: id of the expected token
-
-### `error` NotOwner(address,address)
-
-The address from which the token is sent is not the current owner
-
-Params:
- - `currentOwner`: the current owner
- - `provided`: the address expected to be the current owner
-
-### `error` AlreadyClaimed()
-
-When you attempt to claim a Blocky using owner() but the Blocky has already been claimed or transfered
-
-
-### `error` InvalidSignature()
-
-The signature do not match the expected signer
-
+ - `tokenID`: id of the expected token
 
 ### `error` NonceOverflow()
 
@@ -430,6 +405,14 @@ The Nonce overflowed, make a transfer to self to allow new nonces.
 
 Not authorized to perform this operation
 
+
+### `error` NotOwner(address,address)
+
+The address from which the token is sent is not the current owner
+
+Params:
+ - `provided`: the address expected to be the current owner
+ - `currentOwner`: the current owner
 
 ### `error` TransferRejected()
 
