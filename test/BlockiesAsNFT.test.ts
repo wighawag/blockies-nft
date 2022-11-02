@@ -18,18 +18,18 @@ erc721.runMochaTests('Blockies as NFT', {burn: false, ownedByAll: true}, async (
 			const id = randomOwner.address;
 			const btx = await state.users[0].signer.sendTransaction({
 				to: randomOwner.address,
-				value: parseEther('0.1')
+				value: parseEther('0.1'),
 			});
 			await btx.wait();
 
 			const tx = await state.Blockies.connect(randomOwner).transferFrom(randomOwner.address, to, id, {
-				gasLimit: 1000000 // needed for some reason for solidity-coverage, else you get `InvalidInputError: sender doesn't have enough funds to send tx. The max upfront cost is: 1649265979810500000000 and the sender's account only has: 100000000000000000` (See: https://github.com/sc-forks/solidity-coverage/issues/648)
+				gasLimit: 1000000, // needed for some reason for solidity-coverage, else you get `InvalidInputError: sender doesn't have enough funds to send tx. The max upfront cost is: 1649265979810500000000 and the sender's account only has: 100000000000000000` (See: https://github.com/sc-forks/solidity-coverage/issues/648)
 			});
 			return {
 				hash: tx.hash,
-				tokenId: id
+				tokenId: id,
 			};
 		},
-		users
+		users,
 	};
 });

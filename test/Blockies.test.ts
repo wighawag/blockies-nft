@@ -105,7 +105,7 @@ describe('Blockies', function () {
 
 		const list = await Blockies.callStatic.ownerAndLastTransferBlockNumberList([
 			users[1].address,
-			users[2].address
+			users[2].address,
 		]);
 		expect(list[0].owner).to.be.equal(users[1].address);
 		expect(list[0].lastTransferBlockNumber).to.be.equal(0);
@@ -120,7 +120,7 @@ describe('Blockies', function () {
 		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[3].address, users[1].address));
 		const list = await Blockies.callStatic.ownerAndLastTransferBlockNumberList([
 			users[1].address,
-			users[2].address
+			users[2].address,
 		]);
 		expect(list[0].owner).to.be.equal(users[3].address);
 		expect(list[0].lastTransferBlockNumber).to.be.equal(5);

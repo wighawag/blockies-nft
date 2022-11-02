@@ -4,40 +4,40 @@ export const ERC4494SignerFactory = new EIP712SignerFactory({
 	Permit: [
 		{
 			name: 'spender',
-			type: 'address'
+			type: 'address',
 		},
 		{
 			name: 'tokenId',
-			type: 'uint256'
+			type: 'uint256',
 		},
 		{
 			name: 'nonce',
-			type: 'uint256'
+			type: 'uint256',
 		},
 		{
 			name: 'deadline',
-			type: 'uint256'
-		}
-	]
+			type: 'uint256',
+		},
+	],
 });
 
 export const ERC4494StylePermitForAllSignerFactory = new EIP712SignerFactory({
 	PermitForAll: [
 		{
 			name: 'owner',
-			type: 'address'
+			type: 'address',
 		},
 		{
 			name: 'spender',
-			type: 'address'
+			type: 'address',
 		},
 		{
 			name: 'nonce',
-			type: 'uint256'
+			type: 'uint256',
 		},
 		{
 			name: 'deadline',
-			type: 'uint256'
-		}
-	]
+			type: 'uint256',
+		},
+	],
 });

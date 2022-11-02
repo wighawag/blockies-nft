@@ -16,69 +16,69 @@ const config: HardhatUserConfig = {
 				settings: {
 					optimizer: {
 						enabled: true,
-						runs: 2000
-					}
-				}
-			}
-		]
+						runs: 2000,
+					},
+				},
+			},
+		],
 	},
 	namedAccounts: {
 		deployer: 0,
 		initialOwnerOfBlockyZero: {
 			hardhat: 'deployer',
 			localost: 'deployer',
-			default: '0xf78cd306b23031de9e739a5bcde61764e82ad5ef'
-		}
+			default: '0xf78cd306b23031de9e739a5bcde61764e82ad5ef',
+		},
 	},
 	networks: addForkConfiguration({
 		hardhat: {
-			initialBaseFeePerGas: 0 // to fix : https://github.com/sc-forks/solidity-coverage/issues/652, see https://github.com/sc-forks/solidity-coverage/issues/652#issuecomment-896330136
+			initialBaseFeePerGas: 0, // to fix : https://github.com/sc-forks/solidity-coverage/issues/652, see https://github.com/sc-forks/solidity-coverage/issues/652#issuecomment-896330136
 		},
 		localhost: {
 			url: node_url('localhost'),
-			accounts: accounts()
+			accounts: accounts(),
 		},
 		staging: {
 			url: node_url('rinkeby'),
-			accounts: accounts('rinkeby')
+			accounts: accounts('rinkeby'),
 		},
 		production: {
 			url: node_url('mainnet'),
-			accounts: accounts('mainnet')
+			accounts: accounts('mainnet'),
 		},
 		mainnet: {
 			url: node_url('mainnet'),
-			accounts: accounts('mainnet')
+			accounts: accounts('mainnet'),
 		},
 		rinkeby: {
 			url: node_url('rinkeby'),
-			accounts: accounts('rinkeby')
+			accounts: accounts('rinkeby'),
 		},
 		kovan: {
 			url: node_url('kovan'),
-			accounts: accounts('kovan')
+			accounts: accounts('kovan'),
 		},
 		goerli: {
 			url: node_url('goerli'),
-			accounts: accounts('goerli')
-		}
+			accounts: accounts('goerli'),
+		},
 	}),
 	paths: {
-		sources: process.env.COVERAGE_SRC ? process.env.COVERAGE_SRC : 'src'
+		sources: process.env.COVERAGE_SRC ? process.env.COVERAGE_SRC : 'src',
 	},
 	gasReporter: {
 		currency: 'USD',
 		gasPrice: 100,
 		enabled: process.env.REPORT_GAS ? true : false,
 		coinmarketcap: process.env.COINMARKETCAP_API_KEY,
-		maxMethodDiff: 10
+		maxMethodDiff: 10,
 	},
 	typechain: {
 		outDir: 'typechain',
-		target: 'ethers-v5'
+		target: 'ethers-v5',
 	},
 	mocha: {
-		timeout: 0
+		timeout: 0,
 	},
 	external: process.env.HARDHAT_FORK
 		? {
@@ -86,15 +86,15 @@ const config: HardhatUserConfig = {
 					// process.env.HARDHAT_FORK will specify the network that the fork is made from.
 					// these lines allow it to fetch the deployments from the network being forked from both for node and deploy task
 					hardhat: ['deployments/' + process.env.HARDHAT_FORK],
-					localhost: ['deployments/' + process.env.HARDHAT_FORK]
-				}
+					localhost: ['deployments/' + process.env.HARDHAT_FORK],
+				},
 		  }
 		: undefined,
 
 	tenderly: {
 		project: 'template-ethereum-contracts',
-		username: process.env.TENDERLY_USERNAME as string
-	}
+		username: process.env.TENDERLY_USERNAME as string,
+	},
 };
 
 export default config;

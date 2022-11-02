@@ -8,7 +8,7 @@ export const CommitmentHashZero = '0x0000000000000000000000000000000000000000000
 export const setup = deployments.createFixture(async () => {
 	await deployments.fixture('Blockies');
 	const contracts = {
-		Blockies: <Blockies>await ethers.getContract('Blockies')
+		Blockies: <Blockies>await ethers.getContract('Blockies'),
 	};
 	const {initialOwnerOfBlockyZero} = await getNamedAccounts();
 	const BlockiesPermit = await ERC4494SignerFactory.createSignerFactory(contracts.Blockies);
@@ -21,8 +21,8 @@ export const setup = deployments.createFixture(async () => {
 		users,
 		initialOwnerOfBlockyZero: await setupUser(initialOwnerOfBlockyZero, contracts, {
 			BlockiesPermit,
-			BlockiesPermitForAll
-		})
+			BlockiesPermitForAll,
+		}),
 	};
 });
 

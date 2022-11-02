@@ -15,7 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		// proxy: network.name !== 'mainnet',
 		deterministicDeployment: true,
 		autoMine: true,
-		skipIfAlreadyDeployed: hre.network.live
+		skipIfAlreadyDeployed: hre.network.live,
 	});
 };
 export default func;

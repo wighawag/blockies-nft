@@ -53,7 +53,7 @@ export class EIP712SignerFactory {
 			domainToUse = buildDomain(...domainData);
 		} else if ('address' in contractAddressOrDomain && 'provider' in contractAddressOrDomain) {
 			const iface = new Interface([
-				'function eip712Domain() view returns (bytes1,string,string,uint256,address,bytes32,uint256[])'
+				'function eip712Domain() view returns (bytes1,string,string,uint256,address,bytes32,uint256[])',
 			]);
 			// const rawCallResult = await this.provider.call({to: contractAddressOrDomain, data: '0x'});
 			// const domainData = defaultAbiCoder.decode(
@@ -63,7 +63,7 @@ export class EIP712SignerFactory {
 			const data = iface.encodeFunctionData('eip712Domain');
 			const rawCallResult = await contractAddressOrDomain.provider.call({
 				to: contractAddressOrDomain.address,
-				data
+				data,
 			});
 			const domainData = iface.decodeFunctionResult('eip712Domain', rawCallResult) as [
 				number,
@@ -87,9 +87,9 @@ export class EIP712SignerFactory {
 							domainToUse.chainId = await user.signer.getChainId();
 						}
 						return user.signer._signTypedData(domainToUse, types, value);
-					}
+					},
 				};
-			}
+			},
 		};
 	}
 }

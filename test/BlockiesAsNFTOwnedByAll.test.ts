@@ -102,7 +102,7 @@ describe('Approval via Permit', function () {
 			spender: users[1].address,
 			tokenId: users[0].address,
 			nonce: 0,
-			deadline: constants.MaxUint256
+			deadline: constants.MaxUint256,
 		});
 
 		const permitTX = await users[1].Blockies.permit(
@@ -135,7 +135,7 @@ describe('Approval via Permit', function () {
 			owner: users[0].address,
 			spender: users[1].address,
 			nonce: 0,
-			deadline: constants.MaxUint256
+			deadline: constants.MaxUint256,
 		});
 
 		const permitTX = await users[1].Blockies.permitForAll(
