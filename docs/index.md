@@ -1,6 +1,6 @@
 
 # On-chain Blockies
-Blockies as NFTs. Each ethereum address owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures. Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
+What if Blockies were NFTs. That is what this collection is all about. Check your wallet as every ethereum address already owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures. Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
 
 ## **Methods**
 
@@ -104,7 +104,7 @@ Returns:
 
 ### **isApprovedForAll(address,address)**
 
-Check if the sender approved the operator.
+Check if the sender approved the operator to transfer any of its tokens.
 
 Params:
  - `owner`: The address of the owner.
@@ -129,6 +129,8 @@ A descriptive name for a collection of NFTs in this contract
 
 Allows to retrieve current nonce for token
 
+Params:
+ - `tokenID`: token id
 
 Returns:
  - `nonce`: token nonce
@@ -162,8 +164,6 @@ Get the address of the owner
 
 Get the list of owner of a token and the blockNumber of its last transfer, useful to voting mechanism.
 
-Params:
- - `ids`: The list of token ids to check.
 
 Returns:
  - `ownersData`: The list of (owner, lastTransferBlockNumber) for each ids given as input.
@@ -176,7 +176,7 @@ Returns:
 Get the owner of a token and the blockNumber of the last transfer, useful to voting mechanism.
 
 Params:
- - `id`: The id of the token.
+ - `tokenID`: The id of the token.
 
 Returns:
  - `owner`: The address of the token owner.

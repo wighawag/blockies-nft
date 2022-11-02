@@ -10,7 +10,8 @@ import "solidity-kit/solc_0.8/ERC173/implementations/Owned.sol";
 
 import "./ERC721OwnedByAll.sol";
 
-/// @notice Blockies as NFTs. Each ethereum address owns its own Blocky NFT. No minting needed.
+/// @notice What if Blockies were NFTs. That is what this collection is all about.
+/// Check your wallet as every ethereum address already owns its own Blocky NFT. No minting needed.
 /// You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures.
 /// Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token.
 /// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
