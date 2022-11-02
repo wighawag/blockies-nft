@@ -4,6 +4,13 @@ import {setup} from './setup';
 import {waitFor} from './utils';
 
 describe('Blockies ERC4494', function () {
+	it('supportsInterface', async function () {
+		const state = await setup();
+		const {Blockies} = state;
+		expect(await Blockies.callStatic.supportsInterface('0x5604e225')).to.be.true;
+		expect(await Blockies.callStatic.supportsInterface('0xefdb586b')).to.be.true;
+	});
+
 	it('permit for all update account nonce', async function () {
 		const state = await setup();
 		const {users, Blockies} = state;
@@ -75,5 +82,17 @@ describe('Blockies ERC4494', function () {
 		const newNonce = nonce.add(1);
 		expect(await Blockies['nonces(uint256)'](users[0].address)).to.be.equal(newNonce);
 		expect(await Blockies.tokenNonces(users[0].address)).to.be.equal(newNonce);
+	});
+
+	it('getting nonce of non existent token fails', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+		await expect(Blockies.tokenNonces(BigNumber.from(2).pow(160))).to.be.reverted;
+	});
+
+	it('getting nonce of existing token works', async function () {
+		const state = await setup();
+		const {users, Blockies} = state;
+		expect(await Blockies.tokenNonces(BigNumber.from(2).pow(160).sub(1))).to.be.equal(0);
 	});
 });

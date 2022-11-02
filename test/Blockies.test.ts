@@ -170,4 +170,65 @@ describe('Blockies', function () {
 		await waitFor(initialOwnerOfBlockyZero.Blockies.claimOwnership(Blockies.address));
 		expect(await Blockies.callStatic.ownerOf(Blockies.address)).to.be.equal(initialOwnerOfBlockyZero.address);
 	});
+
+	it('owner can set ENS name', async function () {
+		// const state = await setup();
+		// const {initialOwnerOfBlockyZero} = state;
+		// await waitFor(initialOwnerOfBlockyZero.Blockies.setENSName('hello.eth'));
+		// TODO get name and check
+		// see :
+		// const label = sha3HexAddress(msg.sender);
+		// const node = sha3(ADDR_REVERSE_NODE, label);
+		// /**
+		//  * @dev An optimised function to compute the sha3 of the lower-case
+		//  *      hexadecimal representation of an Ethereum address.
+		//  * @param addr The address to hash
+		//  * @return The SHA3 hash of the lower-case hexadecimal encoding of the
+		//  *         input address.
+		//  */
+		//  function sha3HexAddress(address addr) private returns (bytes32 ret) {
+		// 		addr; ret; // Stop warning us about unused variables
+		// 		assembly {
+		// 				let lookup := 0x3031323334353637383961626364656600000000000000000000000000000000
+		// 				let i := 40
+		// 		loop:
+		// 				i := sub(i, 1)
+		// 				mstore8(i, byte(and(addr, 0xf), lookup))
+		// 				addr := div(addr, 0x10)
+		// 				i := sub(i, 1)
+		// 				mstore8(i, byte(and(addr, 0xf), lookup))
+		// 				addr := div(addr, 0x10)
+		// 				jumpi(loop, i)
+		// 				ret := sha3(0, 40)
+		// 		}
+		// }
+	});
+
+	it('non owner cannot set ENS name', async function () {
+		const state = await setup();
+		const {users} = state;
+		await expect(users[0].Blockies.setENSName('hello.eth')).to.be.revertedWith('NotAuthorized()');
+	});
+
+	it('owner can change owner', async function () {
+		const state = await setup();
+		const {initialOwnerOfBlockyZero, users, Blockies} = state;
+		await waitFor(initialOwnerOfBlockyZero.Blockies.transferOwnership(users[0].address));
+		expect(await Blockies.callStatic.owner()).to.be.equal(users[0].address);
+	});
+
+	it('now owner cannot change owner', async function () {
+		const state = await setup();
+		const {users} = state;
+		await expect(users[0].Blockies.transferOwnership(users[1].address)).to.be.revertedWith('NotAuthorized()');
+	});
+
+	it('owner cannot change owner after having already changed it', async function () {
+		const state = await setup();
+		const {initialOwnerOfBlockyZero, users} = state;
+		await initialOwnerOfBlockyZero.Blockies.transferOwnership(users[0].address);
+		await expect(initialOwnerOfBlockyZero.Blockies.transferOwnership(users[1].address)).to.be.revertedWith(
+			'NotAuthorized()'
+		);
+	});
 });
