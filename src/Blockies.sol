@@ -5,13 +5,14 @@ import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
 import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
 import "solidity-kit/solc_0.8/ERC173/interfaces/IERC173.sol";
 import "solidity-kit/solc_0.8/ERC721/TokenURI/interfaces/IContractURI.sol";
+import "solidity-kit/solc_0.8/ERC173/implementations/Owned.sol";
 import "./ERC721OwnedByAll.sol";
 
 /// @notice Blockies as NFT. Each ethereum address owns its own Blocky NFT. No minting needed.
 /// You can even use Permit (EIP-4494) to approve contracts via signatures.
 /// Note though that unless you transfer or call `emitSelfTransferEvent` indexer would not know of your token.
 /// @title On-chain Blockies
-contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata, IContractURI {
+contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata, IContractURI, Owned {
 	error AlreadyClaimed();
 
 	// ------------------------------------------------------------------------------------------------------------------
@@ -34,14 +35,10 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 
 	uint256 internal constant COLOR_BG_POS = 168;
 
-	// 54 = distance
-	uint256 internal constant COLOR_1_POS = COLOR_BG_POS + 54; // 222
-	// 18 = distance
+	uint256 internal constant COLOR_1_POS = 222;
 	uint256 internal constant PATH_1_POS = COLOR_1_POS + 18; // 240
 
-	// 827 = distance
-	uint256 internal constant COLOR_2_POS = PATH_1_POS + 827; // 1067
-	// 18 = distance
+	uint256 internal constant COLOR_2_POS = 1067;
 	uint256 internal constant PATH_2_POS = COLOR_2_POS + 18; // 1085
 
 	// ------------------------------------------------------------------------------------------------------------------
@@ -56,17 +53,15 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		int32 s3;
 	}
 
-	/// @notice owner of the contract, can claim this contract's blocky
-	/// no other role granted
-	address public immutable owner;
-
 	// ------------------------------------------------------------------------------------------------------------------
 	// CONSTRUCTOR
 	// ------------------------------------------------------------------------------------------------------------------
 
-	constructor(address contractOwner) UsingERC712WithDynamicChainId(address(0)) ERC721OwnedByAll(contractOwner) {
-		owner = contractOwner;
-	}
+	constructor(address contractOwner)
+		UsingERC712WithDynamicChainId(address(0))
+		ERC721OwnedByAll(contractOwner)
+		Owned(contractOwner, 0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e) // ENS Registry
+	{}
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// EXTERNAL INTERFACE
