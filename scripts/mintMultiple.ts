@@ -5,7 +5,7 @@ async function main() {
 	const addresses = args[0].split(',');
 	const {execute} = deployments;
 	const {deployer} = await getNamedAccounts();
-	await execute('Blockies', {from: deployer, log: true}, 'emitSelfTransferEvents', addresses);
+	await execute('Blockies', {from: deployer, log: true}, 'emitMultipleSelfTransferEvents', addresses);
 }
 
 main()

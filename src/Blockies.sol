@@ -15,7 +15,7 @@ import "./ERC721OwnedByAll.sol";
 /// You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures.
 /// Note that unless you transfer or call `emitSelfTransferEvent` / `emitMultipleSelfTransferEvents` first, indexers would not know of your token.
 /// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)` for ~ 26000 gas.
-/// If you are interested in multiple blockies, you can also call `emitMultipleSelfTransferEvents` for 21000 + ~ 5000 gas per blocky.
+/// If you are interested in multiple blockies, you can also call `emitMultipleSelfTransferEvents` for ~ 21000 + ~ 5000 gas per blocky.
 /// @title On-chain Blockies
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IERC721Metadata, IContractURI, Owned {
 	/// @notice You attempted to claim a Blocky from an EIP-173 contract (using owner()) while the Blocky has already been claimed or transfered.
