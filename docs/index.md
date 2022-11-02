@@ -1,6 +1,6 @@
 
 # On-chain Blockies
-What if Blockies were NFTs. That is what this collection is all about. Check your wallet as every ethereum address already owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures. Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
+What if Blockies were NFTs. That is what this collection is all about. Check your wallet as every ethereum address already owns its own Blocky NFT. No minting needed. You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures. Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token. So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)` for ~ 26000 gas.
 
 ## **Methods**
 
@@ -84,6 +84,17 @@ emit a Transfer event where from &#x3D;&#x3D; to so that indexers can scan the t
 
 Params:
  - `tokenID`: token to emit the event for.
+
+
+
+----
+
+### **emitSelfTransferEvents(uint256[])**
+
+emit a Transfer event where from &#x3D;&#x3D; to for each tokenID provided so that indexers can scan them.   This can be called by anyone at any time and does not change state.   As such it keeps each token&#x27;s approval state and will re-emit an Approval event to indicate that if needed.
+
+Params:
+ - `tokenIDs`: list of token to emit the event for.
 
 
 

@@ -1,4 +1,6 @@
-# Boilerplate for solidity-based on-chain art
+# On-chain Blockies
+
+[Blockies](https://github.com/ethereum/blockies) but generated on-chain in solidity
 
 ## INSTALL
 

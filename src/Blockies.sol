@@ -13,8 +13,9 @@ import "./ERC721OwnedByAll.sol";
 /// @notice What if Blockies were NFTs. That is what this collection is all about.
 /// Check your wallet as every ethereum address already owns its own Blocky NFT. No minting needed.
 /// You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures.
-/// Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token.
-/// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
+/// Note that unless you transfer or call `emitSelfTransferEvent` / `emitMultipleSelfTransferEvents` first, indexers would not know of your token.
+/// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)` for ~ 26000 gas.
+/// If you are interested in multiple blockies, you can also call `emitMultipleSelfTransferEvents` for 21000 + ~ 5000 gas per blocky.
 /// @title On-chain Blockies
 contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IERC721Metadata, IContractURI, Owned {
 	/// @notice You attempted to claim a Blocky from an EIP-173 contract (using owner()) while the Blocky has already been claimed or transfered.
@@ -117,7 +118,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IER
 	///   This can be called by anyone at any time and does not change state.
 	///   As such it keeps the token's approval state and will re-emit an Approval event to indicate that if needed.
 	/// @param tokenID token to emit the event for.
-	function emitSelfTransferEvent(uint256 tokenID) external {
+	function emitSelfTransferEvent(uint256 tokenID) public {
 		(address currentowner, bool operatorEnabled) = _ownerAndOperatorEnabledOf(tokenID);
 		if (currentowner == address(0)) {
 			revert NonExistentToken(tokenID);
@@ -128,6 +129,16 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IER
 		if (operatorEnabled) {
 			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec
 			emit Approval(currentowner, _operators[tokenID], tokenID);
+		}
+	}
+
+	/// @notice emit a Transfer event where from == to for each tokenID provided so that indexers can scan them.
+	///   This can be called by anyone at any time and does not change state.
+	///   As such it keeps each token's approval state and will re-emit an Approval event to indicate that if needed.
+	/// @param tokenIDs list of token to emit the event for.
+	function emitMultipleSelfTransferEvents(uint256[] calldata tokenIDs) external {
+		for (uint256 i = 0; i < tokenIDs.length; i++) {
+			emitSelfTransferEvent(tokenIDs[i]);
 		}
 	}
 
