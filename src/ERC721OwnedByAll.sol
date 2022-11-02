@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: WTFPL
 pragma solidity ^0.8.0;
 
 import "solidity-kit/solc_0.8/ERC721/implementations/BasicERC721.sol";
