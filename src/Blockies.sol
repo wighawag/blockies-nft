@@ -5,34 +5,34 @@ import "solidity-kit/solc_0.8/ERC721/interfaces/IERC721Metadata.sol";
 import "solidity-kit/solc_0.8/ERC173/interfaces/IERC173.sol";
 import "solidity-kit/solc_0.8/ERC721/TokenURI/interfaces/IContractURI.sol";
 
-import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainId.sol";
+import "solidity-kit/solc_0.8/ERC721/ERC4494/implementations/UsingERC4494PermitWithDynamicChainID.sol";
 import "solidity-kit/solc_0.8/ERC173/implementations/Owned.sol";
 
 import "./ERC721OwnedByAll.sol";
 
-/// @notice Blockies as NFT. Each ethereum address owns its own Blocky NFT. No minting needed.
-/// You can even use Permit (EIP-4494) to approve transfer from contracts via signatures.
-/// Note though that unless you transfer or call `emitSelfTransferEvent` indexers would not know of your token.
-/// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`
+/// @notice Blockies as NFTs. Each ethereum address owns its own Blocky NFT. No minting needed.
+/// You can even use Permit (EIP-4494) to approve transfers from smart contracts, via signatures.
+/// Note that unless you transfer or call `emitSelfTransferEvent` first, indexers would not know of your token.
+/// So if you want your Blocky to shows up, you can call `emitSelfTransferEvent(<your address>)`.
 /// @title On-chain Blockies
-contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IERC721Metadata, IContractURI, Owned {
-	/// @notice When you attempt to claim a Blocky using owner() but the Blocky has already been claimed or transfered
+contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainID, IERC721Metadata, IContractURI, Owned {
+	/// @notice You attempted to claim a Blocky from an EIP-173 contract (using owner()) while the Blocky has already been claimed or transfered.
 	error AlreadyClaimed();
 
 	// ------------------------------------------------------------------------------------------------------------------
-	// TEMPLATE
+	// METADATA TEMPLATE
 	// ------------------------------------------------------------------------------------------------------------------
 	bytes internal constant TOKEN_URI_TEMPLATE =
 		'data:application/json,{"name":"0x0000000000000000000000000000000000000000","description":"Blocky%200x0000000000000000000000000000000000000000%20Generated%20On-Chain","image":"';
 
-	// 31 start position for address in name
+	// 31 start position for name
 	// 41 = length of address - 1
 	uint256 internal constant ADDRESS_NAME_POS = 31 + 41; // 72
 
-	// 18 = distance
+	// 90 = start position for descripton
 	// 9 = Blocky%20
 	// 41 = length of address - 1
-	uint256 internal constant ADDRESS_NAME_2_POS = ADDRESS_NAME_POS + 18 + 9 + 41; // 140
+	uint256 internal constant ADDRESS_NAME_2_POS = 90 + 9 + 41; // 140
 
 	bytes internal constant SVG_TEMPLATE =
 		"data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20shape-rendering='crispEdges'%20width='512'%20height='512'><g%20transform='scale(64)'><path%20fill='hsl(000,000%,000%)'%20d='M0,0h8v8h-8z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/><path%20fill='hsl(000,000%,000%)'%20d='M0,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm-8,1m1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1zm1,0h1v0h-1z'/></g></svg>";
@@ -40,10 +40,10 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	uint256 internal constant COLOR_BG_POS = 168;
 
 	uint256 internal constant COLOR_1_POS = 222;
-	uint256 internal constant PATH_1_POS = COLOR_1_POS + 18; // 240
+	uint256 internal constant PATH_1_POS = COLOR_1_POS + 18;
 
 	uint256 internal constant COLOR_2_POS = 1067;
-	uint256 internal constant PATH_2_POS = COLOR_2_POS + 18; // 1085
+	uint256 internal constant PATH_2_POS = COLOR_2_POS + 18;
 
 	// ------------------------------------------------------------------------------------------------------------------
 	// DATA AND TYPES
@@ -62,7 +62,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	// ------------------------------------------------------------------------------------------------------------------
 
 	constructor(address contractOwner)
-		UsingERC712WithDynamicChainId(address(0))
+		UsingERC712WithDynamicChainID(address(0))
 		ERC721OwnedByAll(contractOwner)
 		Owned(contractOwner, 0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e) // ENS Registry
 	{}
@@ -82,12 +82,12 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	}
 
 	/// @inheritdoc IERC721Metadata
-	function tokenURI(uint256 id) external pure override returns (string memory str) {
+	function tokenURI(uint256 tokenID) external pure override returns (string memory str) {
 		bytes memory metadata = TOKEN_URI_TEMPLATE;
-		_writeUintAsHex(metadata, ADDRESS_NAME_POS, id);
-		_writeUintAsHex(metadata, ADDRESS_NAME_2_POS, id);
+		_writeUintAsHex(metadata, ADDRESS_NAME_POS, tokenID);
+		_writeUintAsHex(metadata, ADDRESS_NAME_2_POS, tokenID);
 
-		return string(bytes.concat(metadata, _renderSVG(id), '"}'));
+		return string(bytes.concat(metadata, _renderSVG(tokenID), '"}'));
 	}
 
 	/// @inheritdoc IContractURI
@@ -103,39 +103,39 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 	}
 
 	/// @inheritdoc IERC165
-	function supportsInterface(bytes4 id)
+	function supportsInterface(bytes4 interfaceID)
 		public
 		view
 		override(BasicERC721, UsingERC4494Permit, IERC165)
 		returns (bool)
 	{
-		return BasicERC721.supportsInterface(id) || UsingERC4494Permit.supportsInterface(id);
+		return BasicERC721.supportsInterface(interfaceID) || UsingERC4494Permit.supportsInterface(interfaceID);
 	}
 
 	/// @notice emit Transfer event so that indexer can pick it up.
 	///   This can be called by anyone at any time and does not change state
-	///   As such it keeps the token's operator-approval state and will re-emit an Approval event to indicate that.
-	/// @param id tokenID to emit the event for.
-	function emitSelfTransferEvent(uint256 id) external {
-		(address currentowner, , bool operatorEnabled) = _ownerNonceAndOperatorEnabledOf(id);
+	///   As such it keeps the token's approval state and will re-emit an Approval event to indicate that if needed.
+	/// @param tokenID token to emit the event for.
+	function emitSelfTransferEvent(uint256 tokenID) external {
+		(address currentowner, bool operatorEnabled) = _ownerAndOperatorEnabledOf(tokenID);
 		if (currentowner == address(0)) {
-			revert NonExistentToken(id);
+			revert NonExistentToken(tokenID);
 		}
 
-		emit Transfer(currentowner, currentowner, id);
+		emit Transfer(currentowner, currentowner, tokenID);
 
 		if (operatorEnabled) {
 			// we reemit the Approval as Transfer event indicate a reset, as per ERC721 spec
-			emit Approval(currentowner, _operators[id], id);
+			emit Approval(currentowner, _operators[tokenID], tokenID);
 		}
 	}
 
-	/// @notice claim ownership of the blocky if you are the owner of a contract
-	/// @param id blocky address to claim
-	function claimOwnership(uint256 id) external {
-		(address currentowner, uint256 nonce) = _ownerAndNonceOf(id);
+	/// @notice claim ownership of the blocky if you are the owner of a contract.
+	/// @param tokenID blocky address to claim
+	function claimOwnership(uint256 tokenID) external {
+		(address currentowner, uint256 nonce) = _ownerAndNonceOf(tokenID);
 		if (currentowner == address(0)) {
-			revert NonExistentToken(id);
+			revert NonExistentToken(tokenID);
 		}
 
 		bool registered = (nonce >> 24) != 0;
@@ -147,7 +147,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 			revert NotAuthorized();
 		}
 
-		_transferFrom(currentowner, msg.sender, id, false);
+		_transferFrom(currentowner, msg.sender, tokenID, false);
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------
@@ -267,10 +267,10 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		metadata[pos] = "1";
 	}
 
-	function _renderSVG(uint256 id) internal pure returns (bytes memory) {
+	function _renderSVG(uint256 tokenID) internal pure returns (bytes memory) {
 		bytes memory svg = SVG_TEMPLATE;
 
-		Seed memory randseed = _seedrand(bytes(_addressToString(address(uint160(id)))));
+		Seed memory randseed = _seedrand(bytes(_addressToString(address(uint160(tokenID)))));
 
 		_setColor(svg, randseed, 1);
 		_setColor(svg, randseed, 0);

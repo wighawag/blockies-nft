@@ -6,7 +6,7 @@ import "solidity-kit/solc_0.8/ERC721/implementations/BasicERC721.sol";
 abstract contract ERC721OwnedByAll is BasicERC721, IERC721Supply {
 	constructor(address initialOwnerOfTokenIdZero) {
 		if (initialOwnerOfTokenIdZero == address(0)) {
-			//ensure address zero do not own any token
+			// This ensures address zero do not own any token.
 			initialOwnerOfTokenIdZero = address(this);
 		}
 		_transferFrom(address(0), initialOwnerOfTokenIdZero, 0, false);
