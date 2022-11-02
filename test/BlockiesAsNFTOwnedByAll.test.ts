@@ -75,19 +75,19 @@ describe('Blockies: balance', function () {
 		const balance = await Blockies.callStatic.balanceOf(users[0].address);
 		assert.equal(balance.toNumber(), 1);
 
-		const tokenId1 = users[1].address;
-		await waitFor(users[0].Blockies.emitSelfTransferEvent(tokenId1));
-		const tokenId2 = users[2].address;
-		await waitFor(users[0].Blockies.emitSelfTransferEvent(tokenId2));
+		const tokenID1 = users[1].address;
+		await waitFor(users[0].Blockies.emitSelfTransferEvent(tokenID1));
+		const tokenID2 = users[2].address;
+		await waitFor(users[0].Blockies.emitSelfTransferEvent(tokenID2));
 
-		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[0].address, tokenId1));
+		await waitFor(users[1].Blockies.transferFrom(users[1].address, users[0].address, tokenID1));
 		let newBalance = await Blockies.callStatic.balanceOf(users[0].address);
 		assert.equal(newBalance.toNumber(), 2);
-		await waitFor(users[2].Blockies.transferFrom(users[2].address, users[0].address, tokenId2));
+		await waitFor(users[2].Blockies.transferFrom(users[2].address, users[0].address, tokenID2));
 		newBalance = await Blockies.callStatic.balanceOf(users[0].address);
 		assert.equal(newBalance.toNumber(), 3);
 
-		await waitFor(users[0].Blockies.transferFrom(users[0].address, users[2].address, tokenId1));
+		await waitFor(users[0].Blockies.transferFrom(users[0].address, users[2].address, tokenID1));
 		newBalance = await Blockies.callStatic.balanceOf(users[0].address);
 		assert.equal(newBalance.toNumber(), 2);
 	});
