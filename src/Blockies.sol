@@ -91,7 +91,7 @@ contract Blockies is ERC721OwnedByAll, UsingERC4494PermitWithDynamicChainId, IER
 		return
 			string(
 				bytes.concat(
-					'data:application/json,{"name":"On-chain%20Blockies","description":"The%20original%20Blockies,%20but%20fully%20generated%20on-chain.%20Each%20Ethereum%20address%20owns%20its%20own%20unique%20Blocky%20NFT.","image":"',
+					'data:application/json,{"name":"On-chain%20Blockies","description":"The%20ubiquitous%20Blockies,%20but%20fully%20generated%20on-chain.%20Each%20Ethereum%20address%20owns%20its%20own%20unique%20Blocky%20NFT.","image":"',
 					_renderSVG(uint160(address(this))),
 					'"}'
 				)
