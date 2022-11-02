@@ -26,7 +26,6 @@ const config: HardhatUserConfig = {
 		deployer: 0,
 		initialOwnerOfBlockyZero: {
 			hardhat: 'deployer',
-			localost: 'deployer',
 			default: '0xf78cd306b23031de9e739a5bcde61764e82ad5ef',
 		},
 	},
