@@ -23,7 +23,10 @@ const config: HardhatUserConfig = {
 		],
 	},
 	namedAccounts: {
-		deployer: 0,
+		deployer: {
+			default: 0,
+			mainnet: 'external://0xf78cd306b23031de9e739a5bcde61764e82ad5ef',
+		},
 		initialOwnerOfBlockyZero: {
 			hardhat: 'deployer',
 			default: '0xf78cd306b23031de9e739a5bcde61764e82ad5ef',
