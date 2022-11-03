@@ -140,6 +140,9 @@ async function main() {
 			const signature = generateSignature(fragment);
 			if (fragment.type === 'error') {
 				let userdoc = deployment.userdoc?.errors && deployment.userdoc?.errors[signature];
+				if (!userdoc) {
+					console.error(`no doc for error: ${signature}`);
+				}
 				if (Array.isArray(userdoc)) {
 					userdoc = userdoc[0];
 				}
@@ -153,6 +156,9 @@ async function main() {
 				}
 			} else if (fragment.type === 'event') {
 				const userdoc = deployment.userdoc?.events && deployment.userdoc?.events[signature];
+				if (!userdoc) {
+					console.error(`no doc for event: ${signature}`);
+				}
 				const devdoc = deployment.devdoc?.events && deployment.devdoc?.events[signature];
 				if (userdoc) {
 					const natspec = computeNatspec(userdoc, devdoc, fragment);
@@ -160,6 +166,9 @@ async function main() {
 				}
 			} else if (fragment.type === 'function') {
 				const userdoc = deployment.userdoc?.methods && deployment.userdoc?.methods[signature];
+				if (!userdoc) {
+					console.error(`no doc for method: ${signature}`);
+				}
 				const devdoc = deployment.devdoc?.methods && deployment.devdoc?.methods[signature];
 				if (userdoc) {
 					const natspec = computeNatspec(userdoc, devdoc, fragment);
