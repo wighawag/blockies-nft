@@ -1,5 +1,9 @@
 # On-chain Blockies
 
+[Twitter announcement](https://twitter.com/wighawag/status/1588162036084547584)
+
+
+
 [Blockies](https://github.com/ethereum/blockies) but generated on-chain in solidity
 
 ## INSTALL
